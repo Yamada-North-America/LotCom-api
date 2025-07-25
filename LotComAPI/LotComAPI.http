@@ -1,0 +1,6 @@
+@LotComAPI_HostAddress = http://localhost:5196
+
+GET {{LotComAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
