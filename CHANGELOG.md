@@ -1,0 +1,345 @@
+
+# `v0.0.1` 
+### Initial UI Design and Project Rename
+- Main Page UI Design in XAML.
+- MVVM implementations.
+- Production Datasource Model implementations.
+- Rename (LCMS -> LotCoM).
+
+## `v0.0.11`
+#### Final UI Design and Functionality
+- Parts List population for any selected Process.
+- Model # implication when a Part is selected.
+- UI Entry controls reset their values and states when the Process is changed.
+
+# `v0.0.2`
+### Entered Data Validation
+- Implement `PrintValidator` class that captures and ensures that all required entries are made for any Process.
+
+# `v0.1.0`
+### Label Generation
+- Implement connection between `InterfaceCaptureValidator` and digital Label generation.
+- Implement digital Label generation classes.
+
+## `v0.1.1`
+#### Print Spooling
+- Implement connection between Label generation and printing.
+- Implement Print Spooling classes.
+
+# `v0.2.0`
+### External Part Control
+- Adopt [SemVer](https://semver.org/) (Semantic Versioning 2.0.0) versioning conventions.
+- Implement integration with Database for external Process Part Number control.
+
+## `v0.2.1`
+#### Build Setup
+- Build environment setup (manifests) for Windows MSIX Packaging.
+
+# `v0.3.0`
+### Operator ID Input
+- Operator identification (initial) input in UI.
+- Refactor `ProcessRequirements` datasource to leverage more code reuse and enforce universal basket data fields.
+- Resolve issue with error messaging on UI validation failure ([#16](https://github.com/LotCoM/LotCoM-printer/issues/16)).
+- Resolve issue with improper JBK # formatting ([#17](https://github.com/LotCoM/LotCoM-printer/issues/17)).
+- Resolve a fatal formatting error in the Deburr JBK # field ([#18](https://github.com/LotCoM/LotCoM-printer/issues/18)).
+- Resolve omission of Process Title in Label text ([#19](https://github.com/LotCoM/LotCoM-printer/issues/19)).
+- Resolve issue with required data fields not hiding/showing on Process ([#20](https://github.com/LotCoM/LotCoM-printer/issues/20)).
+
+# `v0.4.0`
+### JBK Queue System
+- Global JBK # queueing and assignment system integration.
+- General performance and clarity refactoring.
+- Model Number UI control changed from a configured Picker to an implied Entry.
+
+## `v0.4.1`
+#### Label Serialization Build-out
+- Implement `LotQueue`, a copy of `JBKQueue` to complete the Label serialization system.
+- Implement actual consumption of serial numbers.
+
+## `v0.4.2 (dead branch)`
+#### Improve Serialization Integrity
+- Adress a gap in the serialization system, outlined in [#25](https://github.com/LotCoM/LotCoM-printer/issues/25).
+- Approach 1; **not selected for implementation**.
+
+## `v0.4.21`
+#### Resolve Serial Number System timing gap
+Approach 2:
+- Consume the serial number at print execution:
+  - Waits until the print job is started to read the queued serial number.
+  - Places the serial number in the UI to be validated.
+    - Consumes it if the job is successful; does not consume if not.
+- Pros:
+  - Eliminates* the problem and leaves no gaps in the FIFO ordering system.
+    - There is a very, very small gap between queue read time and consumption time.
+      - This could still duplicate serial numbers.
+      - Future efficiency improvements should be made to limit the time between.
+- Cons:
+  - Operators cannot see the serial number while printing the Label.
+
+## `0.4.22`
+#### Build Environment Work
+- Drop `v` prefixing convention for version numbers (not compliant with SemVer).
+- Update manifests to include new certificate information.
+
+## `0.4.23`
+#### CI/CD Pipeline - Phase 1 (CI)
+
+## `0.4.24`
+#### CI/CD Pipeline - Phase 2 (CD)
+
+# `0.5`
+### Partial Basket and Consolidation System
+
+## `0.5.0`
+#### Partial Label Implementation
+- Implement `PartialLabel.cs`, an extension of the `Label.cs` class with special formatting.
+
+## `0.5.1`
+#### Queue Consumption and Reserving (Partial Label)
+- Refactor Serial # assignment and queueing to eliminate the gap outlined in [#53](https://github.com/LotCoM/LotCoM-printer/issues/53).
+- Resolve [#58](https://github.com/LotCoM/LotCoM-printer/issues/58).
+- Implement standalone `Serialization` namespace, classes, and system.
+  - `CachedSerialNumber.cs`: represents a simple `Part Number`: `Serial Number` pair with basic methods.
+  - `SerialCache.cs`: controls interaction with the Serial Caching file system and contents.
+  - `Serializer.cs`: assigns Serial Numbers to new Labels (both `Full` and `Partial`).
+### `0.5.1.1`
+- Refactor CI/CD pipeline to: 
+  - Activate on pushes to `stable` instead of `main`;
+  - Ensure that the `.NET runtime` is packaged with the application.
+- Add application version to window title bar.
+
+## `0.5.2`
+#### Label Tweaks (Project Request)
+- Add Process codes (numbers) to Process titles.
+- Add timestamp (print time) to Labels.
+- Move part name above process and make it larger.
+- Add Die # to required fields for Deburr process.
+
+## `0.5.3`
+#### Serialization, UI Optimization
+- Fix for [#77](https://github.com/LotCoM/LotCoM-printer/issues/77).
+- Fix for [#27](https://github.com/LotCoM/LotCoM-printer/issues/27).
+- Fix for [#59](https://github.com/LotCoM/LotCoM-printer/issues/59).
+
+## `0.5.4`
+#### More Serialization bug fixes
+- Resolve [#76](https://github.com/LotCoM/LotCoM-printer/issues/76).
+- Resolve [#74](https://github.com/LotCoM/LotCoM-printer/issues/74).
+- Resolve [#22](https://github.com/LotCoM/LotCoM-printer/issues/22).
+### `0.5.4.2`
+Fix for a silent crash, outlined and documented in [#81](https://github.com/LotCoM/LotCoM-printer/issues/81).
+### `0.5.4.3`
+Refactor database access paths to mirror schema change.
+
+## `0.5.5`
+#### DPI Scaling (Label print uniformity)
+- Implement `DpiUtilites.cs` class to retrieve DPI scale.
+- Use DPI scale to calculate scaling Label dimensions.
+
+# `0.6`
+### UI Stylizing & Print Reporting
+- Begin use of new Branching Standards.
+- Based on: 
+  - [digitaljhelms](https://gist.github.com/digitaljhelms) @ [Gist](https://gist.github.com/digitaljhelms/4287848).
+  - [GitKracken](https://www.gitkraken.com/learn/git/best-practices/git-branch-strategy).
+- See diagram [here](https://lucid.app/lucidchart/aaad2061-1fc2-465e-b62e-4bc48873cd14/edit?viewport_loc=-60%2C-283%2C1975%2C905%2C0_0&invitationId=inv_e0923549-1df8-43c7-9948-0dc45259f632).
+
+## `0.6.0`
+#### Print Logging; UI Optimization and Stylizing
+- [`0.6.0`](https://github.com/LotCoM/LotCoM-printer/pull/87)
+  - Implement print confirmation message (resolve [#85](https://github.com/LotCoM/LotCoM-printer/issues/85)).
+  - Improve stand-out of entries and dropdowns in the UI.
+  - Change UI title from "Print Labels" => "Print WIP Labels".
+  - Add Originator/Pass-through indication.
+- [`feature/0.6.1`](https://github.com/LotCoM/LotCoM-printer/pull/94)
+  - Implement print history logging.
+  - Implement an activity indicator from print button click to print job completion.
+- [`bug/91`](https://github.com/LotCoM/LotCoM-printer/pull/96)
+  - Resolve crash on empty form print attempt.
+- [`bug/92`](https://github.com/LotCoM/LotCoM-printer/pull/98)
+  - Resolve double error messages (actual error cause + failed print message).
+- [`bug/95`](https://github.com/LotCoM/LotCoM-printer/pull/99)
+  - Uniform alert raising location (code-behind `MainPage.xaml.cs`).
+- [`bug/93`](https://github.com/LotCoM/LotCoM-printer/pull/100)
+  - Refactor from `IAlertService` implementation to `CommunityToolkit.Maui.Views.Popup` dependency.
+  - Improve Popup styles.
+- [`feature/97`](https://github.com/LotCoM/LotCoM-printer/pull/103)
+  - Improve clarity of locked entry controls.
+
+## `0.6.1`
+#### 
+- [`feature/106`](https://github.com/LotCoM/LotCoM-printer/pull/111)
+  - Bring datasource classes to parity with new Database schemas ([#106](https://github.com/LotCoM/LotCoM-printer/issues/106)).
+    - Process masterlist with Names, Part Lists, etc.
+  - Resolve issue with Model Number logic not disabling/enabling on Part selection as expected ([#107](https://github.com/LotCoM/LotCoM-printer/issues/107)).
+  - New Datasources:
+    - `Process.cs`: Represents a Process in the WIP process-flow.
+    - `ProcessData.cs`: Exposes methods for interaction with the Process datasource.
+    - `Part.cs`: Represents a Part in the WIP process-flow. 
+    - `PartData.cs`: Exposes methods for interaction with the Parts in the Process datasource.
+  - Pass more explicit data through MVVM architecture (less processing time, more security and resillience).
+- [`feature/110`](https://github.com/LotCoM/LotCoM-printer/pull/112)
+  - Implement a new UI Capture class to replace the previous (flimsy) dictionary approach ([#110](https://github.com/LotCoM/LotCoM-printer/issues/110)).
+  - Resolve issue with missing Part Name on Partial Label ([#109](https://github.com/LotCoM/LotCoM-printer/issues/109)).
+  - Partially integrate printing process with Process/Part classes ([#108](https://github.com/LotCoM/LotCoM-printer/issues/108)).
+  - Slight tweaks to Partial Label formatting.
+  - New classes:
+    - `InterfaceCapture.cs`: Captures and holds the data input in the UI controls at the time of creation.
+    - `Timestamp.cs`: Provides quick and uniform formatting of a `DateTime` object to the desired system format `MM/DD/YYYY-HH:MM:SS`.
+- [`bug/113`](https://github.com/LotCoM/LotCoM-printer/pull/119)
+  - Resolve issue with missing data in Print Logs ([#113](https://github.com/LotCoM/LotCoM-printer/issues/113)).
+- [`feature/114`](https://github.com/LotCoM/LotCoM-printer/pull/116)
+  - Bring Process datasource classes to parity with new Database schema ([#114](https://github.com/LotCoM/LotCoM-printer/issues/114)).
+    - Add each Process' Requirements into the database.
+- [`feature/117`](https://github.com/LotCoM/LotCoM-printer/pull/118)
+  - Implement new Heat Number UI control element ([#117](https://github.com/LotCoM/LotCoM-printer/issues/117)).
+- [`feature/120`](https://github.com/LotCoM/LotCoM-printer/pull/124)
+  - Change Print Logging function to report printing to individual Process datatables ([#120](https://github.com/LotCoM/LotCoM-printer/issues/120)).
+  - New classes:
+    - `PrintLogException.cs`: Custom exception thrown when Print Logging fails and defaults to a dump file.
+- [`feature/122`](https://github.com/LotCoM/LotCoM-printer/pull/123)
+  - Change serialization from Model-based to Part-based ([#122](https://github.com/LotCoM/LotCoM-printer/issues/122)).
+  - New classes:
+    - `SerialQueue.cs`: Abstraction of methods and properties from `JBKQueue.cs` and `LotQueue.cs`.
+      - These classes have been refactored to extend from `SerialQueue.cs`.
+
+## `0.6.1.1`
+#### Bugfix
+- [bug/126](https://github.com/LotCoM/LotCoM-printer/pull/127).
+  - Resolve [#126](https://github.com/LotCoM/LotCoM-printer/issues/126).
+
+## `0.6.1.2`
+#### Bugfixes
+- [bug/128](https://github.com/LotCoM/LotCoM-printer/pull/134).
+  - Resolve [#128](https://github.com/LotCoM/LotCoM-printer/issues/128).
+  - Implements `GetPartInfo` computed property on `Part.cs`. 
+    - Formats `Part.PartNumber` and `Part.PartName` into a singular string that the `PartPicker.ItemDisplayBinding` property can bind to.
+- [bug/130](https://github.com/LotCoM/LotCoM-printer/pull/132).
+  - Resolve [#130](https://github.com/LotCoM/LotCoM-printer/issues/130).
+  - Implements `PassThroughHeadingType` property on `Process.cs`.
+    - Matches a new key in the Process Datasource.
+    - A `PassThroughHeadingType` value is assigned to Pass-through Processes and nullified on Originator Processes.
+    - This property makes Header formatting possible on Pass-through Processes, which do not have a Serialization value.
+  - Modifies `MainPageViewModel.FormatLabelHeader()` method to check both `Process.Serialization` and `Process.PassThroughHeadingType` for either `JBK` or `Lot` values before formatting the Label's header.
+- [bug/131](https://github.com/LotCoM/LotCoM-printer/pull/133).
+  - Resolve [#131](https://github.com/LotCoM/LotCoM-printer/issues/131).
+  - Allows `SerialCacheController.RemoveCachedSerialNumber()` to ignore and immediately return null when an empty string passed as the `SerialNumber` parameter.
+    - This was previously causing the method to throw an error because it was incapable of locating the empty string in the cache file.
+    - Pass-through Processes do not prompt for a Serial Number in the UI, so they pass an empty string as the `SerialNumber` parameter when invoking the `RemoveCachedSerialNumber()` method.
+
+# `0.7`
+## Print Ticketing Overhaul
+Introduction of Print Ticket system, a design change where operators can open and manage several Labels at once, saving them on their local computers.
+
+## `0.7.0`
+#### Feature Update
+**For Detailed Changes, see PR Messages**
+- [feature/136](https://github.com/LotCoM/LotCoM-printer/pull/139).
+  - Implementation of base-level architecture for Print Ticketing;
+  - Improve LotCom environment parity.
+- [bug/140](https://github.com/LotCoM/LotCoM-printer/pull/142).
+  - Deprecation/removal of Basket Type and Partial Label features.
+- [feature/141](https://github.com/LotCoM/LotCoM-printer/pull/143).
+  - Implementation of `Label` base class;
+  - Implementation of `LabelDimensions` class to control Label graphical designs/layouts. 
+- [feature/144](https://github.com/LotCoM/LotCoM-printer/pull/145).
+  - Overhaul of Serialization system to better serve Print Ticketing;
+  - Implementation controlled `SerialNumber` class;
+  - Deprecation/removal caching features.
+- [feature/146](https://github.com/LotCoM/LotCoM-printer/pull/149).
+  - Implementation of Print Ticket caching feature.
+- [feature/147](https://github.com/LotCoM/LotCoM-printer/pull/151).
+  - Implementation of Print Ticket creation feature.
+- [feature/148](https://github.com/LotCoM/LotCoM-printer/pull/152).
+  - Implementation of Print Ticket selection/loading features.
+- [feature/150](https://github.com/LotCoM/LotCoM-printer/pull/153).
+  - Stylization to bring to parity with LotCom system designs.
+- [feature/138](https://github.com/LotCoM/LotCoM-printer/pull/154).
+  - Overhaul of Printing back-end;
+  - Deprecation/removal of `InterfaceCapture` features and the single-screen input paradigm.
+- [feature/155](https://github.com/LotCoM/LotCoM-printer/pull/159).
+  - Implementation of specialized number data type classes.
+- [feature/156](https://github.com/LotCoM/LotCoM-printer/pull/160).
+  - Implementation of Model Code on Full Basket Labels.
+- [feature/157](https://github.com/LotCoM/LotCoM-printer/pull/162).
+  - Reorganization of `Models` namespace to support growing source.
+- [bug/158](https://github.com/LotCoM/LotCoM-printer/pull/164).
+  - Resolution of a bug causing timestamps to always read "00:00:00".
+- [feature/161](https://github.com/LotCoM/LotCoM-printer/pull/165).
+  - Implementation of Partial Tag printing back-end;
+  - Implementation of `Quantity` and `Operator` special data type classes.
+- [bug/166](https://github.com/LotCoM/LotCoM-printer/pull/167).
+  - Resolution of bugs causing silent crashes on startup;
+  - Implementation of improved exception handling throughout Database interactions.
+- [feature/163](https://github.com/LotCoM/LotCoM-printer/pull/168).
+  - Implementation of manual entry support for JBK and Lot Numbers on special Processes.
+
+## `0.7.0.1`
+#### Hotfix
+- [hotfix/170](https://github.com/LotCoM/LotCoM-printer/pull/171).
+  - Restores Date information on list items in the Open Tickets Panel.
+
+## `0.7.0.2`
+#### Bugfix Patch
+- [bug/173](https://github.com/LotCoM/LotCoM-printer/pull/176).
+  - Labels printed for the Deburr Process now print with JBK Number Headers.
+- [bug/175](https://github.com/LotCoM/LotCoM-printer/pull/177).
+  - Resolves forced formatting of Deburr JBK Number entry before entry is complete.
+- [bug/174](https://github.com/LotCoM/LotCoM-printer/pull/178).
+  - Resolves a scaling issue where Labels were cut-off on the production floor computers.
+- [bug/179](https://github.com/LotCoM/LotCoM-printer/pull/180).
+  - Model Number Entry now auto-fills.
+
+## `0.7.0.3`
+#### Bugfix Patch
+- [bug/179](https://github.com/LotCoM/LotCoM-printer/pull/182).
+  - The initial [fix](https://github.com/LotCoM/LotCoM-printer/pull/180) for this issue opened a binding-related issue. This subsequent fault has been addressed, restoring intended functionality and truly addressing the Model Number Entry issue.
+
+## `0.7.0.4`
+#### Minor feature update
+This update implements the following minor functional features:
+- Integration with **LotCom Libraries**, **LotCom's** dedicated library of models;
+- Large-scale UI redesign to meet user friendliness requests;
+- Integration with new Database Schema `v3`;
+- Implementation of Confirmation Popups for impactful user actions;
+- CI/CD automation refactor to produce `MSI` installers over `MSIX` packages.
+
+#### PRs
+
+- [`feature/184`](https://github.com/LotCoM/LotCoM-printer/pull/185):
+  - Project Model updated to utilize the **LotCom Libraries** class library. 
+  - Pulling classes such as **Type** and **Datasources** from the class library helps improve project maintainability by removing the need to maintain copies on each **LotCom** component.
+- [`feature/187`](https://github.com/LotCoM/LotCoM-printer/pull/193):
+  - References to modified Process properties updated to restore intended functionality.
+  - The modifications and additions made to the Database Schema (documented in [LotCom Libraries #6](https://github.com/LotCoM/LotCom-libraries/pull/7)) created faulting references throughout the **LotCom** environment. These references impacted the functionality and usability of the application.
+- [`feature/191`](https://github.com/LotCoM/LotCoM-printer/pull/194):
+  - Implemented Confirmation popups following impactful buttons and actions.
+  - To protect the application and the user from unintentionally making impactful changes, confirmation popups were added. Now, there are two levels of action between the user and an impactful choice.
+- [`feature/188`](https://github.com/LotCoM/LotCoM-printer/pull/195):
+  - Implemented new CI/CD automation pipeline to better interface with YNA IT and to improve deployment cleanliness.
+  - YNA IT's automation processes generally center on the use of MSI installers. The key difference between MSI and MSIX installers is that MSI installs as the system, while MSIX only installs as the user. This causes issues for their automation and creates incongruous installations. There have been multiple cases of faulting application instances on different computers due to deployment issues. With the MSI installation process, YNA IT can force installation at the system level, ensuring clean and uniform application instances.
+- [`feature/186`](https://github.com/LotCoM/LotCoM-printer/pull/192):
+  - User Interface components redesigned to meet user requests and improve user-friendliness.
+  - The original UI was very sterile and low contrast. This interface style is not good for users who aren't familiar with computer systems/don't use a lot of software. Higher contrast and more intense interfaces generally work better for users who are less adept with computer applications.
+
+## `0.7.0.5`, `0.7.0.6`, & `0.7.0.7`
+#### Build and CI/CD fixes
+
+## `0.7.0.8`
+#### Dependency update
+- Update to new version of **LotCom Libraries**:
+  - [Hotfix](https://github.com/LotCoM/LotCom-libraries/commit/af74e5d0dbc933db70809675086366c6116f2fbd) addressing a silent crash created by `SerializationModeExtensions` when loading the application at Pass-through Process stations.
+
+# `0.8`
+### Reprint Feature Update
+Introduction of the Label Reprint feature, which provides operators with the ability to recreate existing Labels with no additional requirements.
+
+## `0.8.0.0`
+#### Feature Update
+- Design new UI components for the Reprint Label features:
+  - [feature/197](https://github.com/LotCoM/LotCoM-printer/pull/208).
+- Implement a new datasource class to read past printed Labels:
+  - [feature/198](https://github.com/LotCoM/LotCoM-printer/pull/203).
+- Modify print system to process Label reprints separately and differently from initial prints.
+- Updates to Model layer classes to match additions/changes in **LotCom Libraries**:
+  - [feature/210](https://github.com/LotCoM/LotCoM-printer/pull/212).
