@@ -40,6 +40,36 @@ public class PartController : ControllerBase
     }
 
     /// <summary>
+    /// Processes a GET HTTP request for all of the Part objects printed by a Process Id in the database.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("printedById={id}")]
+    public ActionResult<IEnumerable<PartDto>> GetAllPrintedBy(int id)
+    {
+        IEnumerable<Part> PartsFromDatabase = _partService.GetPrintedBy(id);
+        // convert each entity from Parts to Dtos
+        IEnumerable<PartDto> Dtos = PartsFromDatabase
+            .Select(PartMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+    
+    /// <summary>
+    /// Processes a GET HTTP request for all of the Part objects scanned by a Process Id in the database.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("scannedById={id}")]
+    public ActionResult<IEnumerable<PartDto>> GetAllScannedBy(int id)
+    {
+        IEnumerable<Part> PartsFromDatabase = _partService.GetScannedBy(id);
+        // convert each entity from Parts to Dtos
+        IEnumerable<PartDto> Dtos = PartsFromDatabase
+            .Select(PartMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
     /// Processes a GET HTTP request for a single Part object in the database.
     /// </summary>
     /// <param name="id">The unique ID of the object that is requested.</param>
