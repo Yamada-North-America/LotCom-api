@@ -1,5 +1,4 @@
 using System.Globalization;
-using LotCom.Types;
 using LotComAPI.Entities;
 using LotComAPI.Models;
 
@@ -26,10 +25,9 @@ public static class PrintMapper
     /// <param name="LotNumber"></param>
     /// <param name="DieNumber"></param>
     /// <param name="DeburrJBKNumber"></param>
-    /// <param name="ModelNumber"></param>
     /// <param name="HeatNumber"></param>
     /// <returns></returns>
-    public static PrintDto HttpToDto(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? ModelNumber = null, string? HeatNumber = null)
+    public static PrintDto HttpToDto(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? HeatNumber = null)
     {
         // decode slashes and colons
         ProductionDate = ProductionDate.Replace("%2F", "/");
@@ -38,11 +36,11 @@ public static class PrintMapper
         try
         {
             DateTime Date = DateTime.ParseExact(ProductionDate, "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
-            ProductionDate = new Timestamp(Date).Stamp;
+            ProductionDate = new LotCom.Types.Timestamp(Date).Stamp;
         }
         catch (FormatException)
         {
-            ProductionDate = new Timestamp(DateTime.MinValue).Stamp;
+            ProductionDate = new LotCom.Types.Timestamp(DateTime.MinValue).Stamp;
         }
         return new PrintDto
         (
@@ -61,7 +59,6 @@ public static class PrintMapper
             LotNumber,
             DieNumber,
             DeburrJBKNumber,
-            ModelNumber,
             HeatNumber,
             ProductionDate
         );
@@ -91,7 +88,6 @@ public static class PrintMapper
             LotNumber: Dto.LotNumber,
             DieNumber: Dto.DieNumber,
             DeburrJBKNumber: Dto.DeburrJBKNumber,
-            ModelNumber: Dto.ModelNumber,
             HeatNumber: Dto.HeatNumber,
             ProductionDate: Dto.ProductionDate
         );
@@ -123,7 +119,6 @@ public static class PrintMapper
             LotNumber: Entity.LotNumber,
             DieNumber: Entity.DieNumber,
             DeburrJBKNumber: Entity.DeburrJBKNumber,
-            ModelNumber: Entity.ModelNumber,
             HeatNumber: Entity.HeatNumber,
             ProductionDate: Entity.ProductionDate
         );

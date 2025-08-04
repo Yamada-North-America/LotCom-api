@@ -26,11 +26,10 @@ public static class ScanMapper
     /// <param name="LotNumber"></param>
     /// <param name="DieNumber"></param>
     /// <param name="DeburrJBKNumber"></param>
-    /// <param name="ModelNumber"></param>
     /// <param name="HeatNumber"></param>
     /// <param name="ProductionDate"></param>
     /// <returns></returns>
-    public static ScanDto HttpToDto(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? ModelNumber, string? HeatNumber, string ProductionDate)
+    public static ScanDto HttpToDto(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
     {
         // decode slashes and colons
         ProductionDate = ProductionDate.Replace("%2F", "/");
@@ -64,7 +63,6 @@ public static class ScanMapper
             LotNumber,
             DieNumber,
             DeburrJBKNumber,
-            ModelNumber,
             HeatNumber,
             ProductionDate
         );
@@ -96,7 +94,6 @@ public static class ScanMapper
             Dto.LotNumber,
             Dto.DieNumber,
             Dto.DeburrJBKNumber,
-            Dto.ModelNumber,
             Dto.HeatNumber,
             Dto.ProductionDate
         );
@@ -130,7 +127,6 @@ public static class ScanMapper
             Entity.LotNumber,
             Entity.DieNumber,
             Entity.DeburrJBKNumber,
-            Entity.ModelNumber,
             Entity.HeatNumber,
             Entity.ProductionDate
         );

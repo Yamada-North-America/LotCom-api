@@ -21,12 +21,11 @@ public static class ProcessMapper
     /// <param name="UsesLotNumber"></param>
     /// <param name="UsesDieNumber"></param>
     /// <param name="UsesDeburrJBKNumber"></param>
-    /// <param name="UsesModelNumber"></param>
     /// <param name="UsesHeatNumber"></param>
     /// <param name="Previous1"></param>
     /// <param name="Previous2"></param>
     /// <returns></returns>
-    public static ProcessDto HttpToDto(int LineCode, string LineName, string Title, string? Serialization, string Type, int OriginationBit, string? PassThroughType, int DoesPrintBit, int DoesScanBit, int UsesJBKNumberBit, int UsesLotNumberBit, int UsesDieNumberBit, int UsesDeburrJBKNumberBit, int UsesModelNumberBit, int UsesHeatNumberBit, int? Previous1, int? Previous2)
+    public static ProcessDto HttpToDto(int LineCode, string LineName, string Title, string? Serialization, string Type, int OriginationBit, string? PassThroughType, int DoesPrintBit, int DoesScanBit, int UsesJBKNumberBit, int UsesLotNumberBit, int UsesDieNumberBit, int UsesDeburrJBKNumberBit, int UsesHeatNumberBit, int? Previous1, int? Previous2)
     {
         // convert from bits to bools (0!=0 -> false or x!=0 -> true)
         // consumes all non-zero digits as true
@@ -37,7 +36,6 @@ public static class ProcessMapper
         bool UsesLotNumber = UsesLotNumberBit != 0;
         bool UsesDieNumber = UsesDieNumberBit != 0;
         bool UsesDeburrJBKNumber = UsesDeburrJBKNumberBit != 0;
-        bool UsesModelNumber = UsesModelNumberBit != 0;
         bool UsesHeatNumber = UsesHeatNumberBit != 0;
         // construct and return Dto
         return new ProcessDto
@@ -55,7 +53,6 @@ public static class ProcessMapper
             UsesLotNumber,
             UsesDieNumber,
             UsesDeburrJBKNumber,
-            UsesModelNumber,
             UsesHeatNumber,
             Previous1,
             Previous2
@@ -84,7 +81,6 @@ public static class ProcessMapper
             Dto.UsesLotNumber,
             Dto.UsesDieNumber,
             Dto.UsesDeburrJBKNumber,
-            Dto.UsesModelNumber,
             Dto.UsesHeatNumber,
             Dto.Previous1,
             Dto.Previous2
@@ -115,7 +111,6 @@ public static class ProcessMapper
             Entity.UsesLotNumber,
             Entity.UsesDieNumber,
             Entity.UsesDeburrJBKNumber,
-            Entity.UsesModelNumber,
             Entity.UsesHeatNumber,
             Entity.Previous1,
             Entity.Previous2
