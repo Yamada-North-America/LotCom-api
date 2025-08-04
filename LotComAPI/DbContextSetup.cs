@@ -58,6 +58,17 @@ public static class DbContextSetup
                 );
             }
         );
+        builder.Services.AddScoped<ISerialService, SerialService>();
+        builder.Services.AddDbContext<SerialContext>
+        (
+            options =>
+            {
+                options.UseSqlServer
+                (
+                    builder.Configuration.GetConnectionString("YNA")
+                );
+            }
+        );
         return builder;
     }
 
@@ -76,5 +87,7 @@ public static class DbContextSetup
         _processContext.Database.EnsureCreated();
         PartContext _partContext = Scope.ServiceProvider.GetRequiredService<PartContext>();
         _partContext.Database.EnsureCreated();
+        SerialContext _serialContext = Scope.ServiceProvider.GetRequiredService<SerialContext>();
+        _serialContext.Database.EnsureCreated();
     }
 }
