@@ -1,4 +1,3 @@
-using LotCom.Types;
 using LotComAPI.DbContexts;
 using LotComAPI.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +69,7 @@ public class PrintService : IPrintService
             throw new ArgumentNullException(nameof(Print));
         }
         // set the Print's timestamps
-        Print.Created = new Timestamp(DateTime.Now).Stamp;
+        Print.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
         Print.Updated = Print.Created;
         // add the Print to the DbSet and set its state
         _context.Prints.Add(Print);
