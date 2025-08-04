@@ -39,6 +39,28 @@ public class PartService : IPartService
     }
 
     /// <summary>
+    /// Queries all of the Parts that can have Labels Printed by ProcessId.
+    /// </summary>
+    /// <param name="ProcessId"></param>
+    /// <returns></returns>
+    public IEnumerable<Part> GetPrintedBy(int ProcessId)
+    {
+        return _context.Parts
+            .Where(x => x.PrintedBy.Equals(ProcessId));
+    }
+
+    /// <summary>
+    /// Queries all of the Parts that can have Labels Scanned by ProcessId.
+    /// </summary>
+    /// <param name="ProcessId"></param>
+    /// <returns></returns>
+    public IEnumerable<Part> GetScannedBy(int ProcessId)
+    {
+        return _context.Parts
+            .Where(x => x.ScannedBy.Equals(ProcessId));
+    }
+
+    /// <summary>
     /// Queries a specific Part from the Database by id.
     /// </summary>
     /// <param name="id"></param>

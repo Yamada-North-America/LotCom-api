@@ -5,6 +5,8 @@ namespace LotComAPI.Services;
 public interface IPartService
 {
     IEnumerable<Part> GetAll();
+    IEnumerable<Part> GetPrintedBy(int processId);
+    IEnumerable<Part> GetScannedBy(int processId);
     Part? Get(int id);
     Part Create(Part Part);
     void Update(int id, Part Part);
