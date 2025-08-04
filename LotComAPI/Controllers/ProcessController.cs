@@ -77,13 +77,12 @@ public class ProcessController : ControllerBase
     /// <param name="UsesLotNumber"></param>
     /// <param name="UsesDieNumber"></param>
     /// <param name="UsesDeburrJBKNumber"></param>
-    /// <param name="UsesModelNumber"></param>
     /// <param name="UsesHeatNumber"></param>
     /// <param name="Previous1"></param>
     /// <param name="Previous2"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ProcessDto> Create(int LineCode, string LineName, string Title, string? Serialization, string Type, int Origination, string? PassThroughType, int DoesPrint, int DoesScan, int UsesJBKNumber, int UsesLotNumber, int UsesDieNumber, int UsesDeburrJBKNumber, int UsesModelNumber, int UsesHeatNumber, int? Previous1, int? Previous2)
+    public ActionResult<ProcessDto> Create(int LineCode, string LineName, string Title, string? Serialization, string Type, int Origination, string? PassThroughType, int DoesPrint, int DoesScan, int UsesJBKNumber, int UsesLotNumber, int UsesDieNumber, int UsesDeburrJBKNumber, int UsesHeatNumber, int? Previous1, int? Previous2)
     {
         ProcessDto Dto = ProcessMapper.HttpToDto
         (
@@ -100,7 +99,6 @@ public class ProcessController : ControllerBase
             UsesLotNumber,
             UsesDieNumber,
             UsesDeburrJBKNumber,
-            UsesModelNumber,
             UsesHeatNumber,
             Previous1,
             Previous2

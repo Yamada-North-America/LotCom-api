@@ -75,12 +75,11 @@ public class ScanController : ControllerBase
     /// <param name="LotNumber"></param>
     /// <param name="DieNumber"></param>
     /// <param name="DeburrJBKNumber"></param>
-    /// <param name="ModelNumber"></param>
     /// <param name="HeatNumber"></param>
     /// <param name="ProductionDate"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ScanDto> Create(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? ModelNumber, string? HeatNumber, string ProductionDate)
+    public ActionResult<ScanDto> Create(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
     {
         ScanDto DtoFromHttp = ScanMapper.HttpToDto
         (
@@ -101,7 +100,6 @@ public class ScanController : ControllerBase
             LotNumber,
             DieNumber,
             DeburrJBKNumber,
-            ModelNumber,
             HeatNumber,
             ProductionDate
         );

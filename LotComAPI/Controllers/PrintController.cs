@@ -61,7 +61,7 @@ public class PrintController : ControllerBase
     /// <param name="Print">The Print object that will be POSTed to the database.</param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PrintDto> Create(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? ModelNumber = null, string? HeatNumber = null)
+    public ActionResult<PrintDto> Create(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? HeatNumber = null)
     {
         // collect a Dto from the HTTP request parameters
         PrintDto DtoFromHttp = PrintMapper.HttpToDto
@@ -82,7 +82,6 @@ public class PrintController : ControllerBase
             LotNumber,
             DieNumber,
             DeburrJBKNumber,
-            ModelNumber,
             HeatNumber
         );
         // map the new Print (as a Dto) to an entity and add it to the Db
