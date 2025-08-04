@@ -5,7 +5,7 @@ namespace LotComAPI.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Print.
 /// </summary>
-public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? ModelNumber, string? HeatNumber, string ProductionDate)
+public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     // protected properties (not transfered by DTO Layer)
     [MaxLength(20)]
@@ -62,9 +62,6 @@ public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuanti
 
     [MaxLength(3)]
     public int? DeburrJBKNumber { get; set; } = DeburrJBKNumber;
-
-    [MaxLength(3)]
-    public string? ModelNumber { get; set; } = ModelNumber;
 
     public string? HeatNumber { get; set; } = HeatNumber;
 
