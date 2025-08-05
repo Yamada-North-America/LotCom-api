@@ -40,6 +40,50 @@ public class PrintController : ControllerBase
     }
 
     /// <summary>
+    /// Processes a GET HTTP request for Print objects created on a specific Date in the database.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    [HttpGet("onDate")]
+    public ActionResult<IEnumerable<Print>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
+    {
+        // parse the date to a DateTime object
+        string Date = $"{month}/{day}/{year}";
+        bool ValidDate = DateTime.TryParse(Date, out DateTime ParsedDate);
+        if (!ValidDate)
+        {
+            return BadRequest();
+        }
+        IEnumerable<Print> PrintsFromDatabase = _printService.GetOnDate(ParsedDate);
+        // convert each of the Print entities into a Dto
+        IEnumerable<PrintDto> Dtos = PrintsFromDatabase
+            .Select(PrintMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for Print objects created by a specific Process on a specific Date in the database.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    [HttpGet("onDateBy")]
+    public ActionResult<IEnumerable<Print>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
+    {
+        // parse the date to a DateTime object
+        string Date = $"{month}/{day}/{year}";
+        bool ValidDate = DateTime.TryParse(Date, out DateTime ParsedDate);
+        if (!ValidDate)
+        {
+            return BadRequest();
+        }
+        IEnumerable<Print> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
+        // convert each of the Print entities into a Dto
+        IEnumerable<PrintDto> Dtos = PrintsFromDatabase
+            .Select(PrintMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
     /// Processes a GET HTTP request for a single Print object in the database.
     /// </summary>
     /// <param name="id">The unique ID of the object that is requested.</param>
