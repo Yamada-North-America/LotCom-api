@@ -5,6 +5,8 @@ namespace LotComAPI.Services;
 public interface IPrintService
 {
     IEnumerable<Print> GetAll();
+    IEnumerable<Print> GetOnDate(DateTime Date);
+    IEnumerable<Print> GetOnDateByProcess(DateTime Date, int ProcessId);
     Print? Get(int id);
     Print Create(Print Print);
     void Update(int id, Print Print);

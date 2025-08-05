@@ -39,6 +39,30 @@ public class PrintService : IPrintService
     }
 
     /// <summary>
+    /// Queries all of the existing Prints that occured on a specified Date from the Print Database.
+    /// </summary>
+    /// <param name="Date"></param>
+    /// <returns></returns>
+    public IEnumerable<Print> GetOnDate(DateTime Date)
+    {
+        string QueryDate = new LotCom.Types.Timestamp(Date).Stamp.Split("-")[0];
+        return _context.Prints
+            .Where(x => x.ProductionDate.Contains(QueryDate));
+    }
+
+    /// <summary>
+    /// Queries all of the existing Prints produced by a sepcific Process on a specified Date from the Print Database.
+    /// </summary>
+    /// <param name="Date"></param>
+    /// <param name="Process"></param>
+    /// <returns></returns>
+    public IEnumerable<Print> GetOnDateByProcess(DateTime Date, int ProcessId)
+    {
+        return GetOnDate(Date)
+            .Where(x => x.ProcessId.Equals(ProcessId));
+    }
+
+    /// <summary>
     /// Queries a specific Print from the Database by id.
     /// </summary>
     /// <param name="id"></param>
