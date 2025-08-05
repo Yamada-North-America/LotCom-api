@@ -60,14 +60,6 @@ jobs:
       run: |
         cd .\LotComAPI
         dotnet restore
-    
-    - name: Install required workloads
-      shell: pwsh
-      run: |
-        # install dotnet tools
-        cd .\LotComAPI
-        dotnet tool install --global wix
-        dotnet workload restore
       
     - name: Build
       shell: pwsh
