@@ -65,7 +65,7 @@ jobs:
       shell: pwsh
       run: |
         cd .\LotComAPI
-        dotnet build --configuration Release --self-contained true --runtime win-x64
+        dotnet build --configuration Release --self-contained true
 
         # save the package to a Package directory
         cd "D:\a\LotCom-api\LotCom-api\LotComAPI\bin\Release\net9.0\win-x64"
