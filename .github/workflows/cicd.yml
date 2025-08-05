@@ -44,6 +44,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         cache: true
+        cache-dependency-path: "./LotComAPI/packages.lock.json"
 
     - name: Download LotCom Libraries
       env:
