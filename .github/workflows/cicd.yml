@@ -28,7 +28,7 @@ jobs:
       run: |
         # retrieve the most recent commit via SHA
         $sha = "${{ github.sha }}"
-        $commitMessage = gh api /repos/lotcom/lotcom-printer/commits/$sha --jq ".commit.message"
+        $commitMessage = gh api /repos/lotcom/lotcom-api/commits/$sha --jq ".commit.message"
 
         # parse the version number out of the commit message
         $pattern = '\d+\.\d+\.\d+\.?[\d]*'
@@ -44,7 +44,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         cache: true
-        cache-dependency-path: "./LotComPrinter/packages.lock.json"
 
     - name: Download LotCom Libraries
       env:
@@ -52,7 +51,7 @@ jobs:
       shell: pwsh
       run: |
         # download LotCom Libraries latest
-        cd "D:\a\LotCom-printer"
+        cd "D:\a\LotCom-api"
         git clone https://masonritchason:${env:PAT_1}@github.com/LotCom/LotCom-libraries.git
 
     - name: Install dependencies
