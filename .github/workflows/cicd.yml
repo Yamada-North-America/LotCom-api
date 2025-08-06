@@ -68,9 +68,9 @@ jobs:
         dotnet build --configuration Release --self-contained true
 
         # save the package to a Package directory
-        cd "D:\a\LotCom-api\LotCom-api\LotComAPI\bin\Release\net9.0\win-x64"
         New-Item -ItemType directory -Path "D:\a\Package" -ErrorAction SilentlyContinue
         # Copy-Item -Path ".\win-x64" -Destination "D:\a\Package" -Recurse
+        cd "D:\a\LotCom-api\LotCom-api\LotComAPI\bin\Release\net9.0
         Compress-Archive -Path ".\win-x64" -DestinationPath "D:\a\Package\LotComAPI_$env:VERSION_NUMBER.zip"
 
     - name: Archive package artifact
