@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Models;
 using LotComAPI.Entities;
 using LotComAPI.Models;
 
@@ -5,20 +6,6 @@ namespace LotComAPI.Mappers;
 
 public static class PartMapper
 {
-    /// <summary>
-    /// Converts HTTP arguments into a PartDto object.
-    /// </summary>
-    /// <param name="Number"></param>
-    /// <param name="PrintedBy"></param>
-    /// <param name="ScannedBy"></param>
-    /// <param name="Name"></param>
-    /// <param name="ModelCode"></param>
-    /// <returns></returns>
-    public static PartDto HttpToDto(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
-    {
-        return new PartDto(Number, PrintedBy, ScannedBy, Name, ModelCode);
-    }
-
     /// <summary>
     /// Performs mapping of values from Models.PartDto to Entities.Part. 
     /// </summary>
@@ -55,5 +42,37 @@ public static class PartMapper
         );
         Dto.Id = Entity.Id;
         return Dto;
+    }
+
+    /// <summary>
+    /// Maps New properties to the corresponding Original properties (in essence, updating the object).
+    /// </summary>
+    /// <param name="Original"></param>
+    /// <param name="New"></param>
+    /// <returns></returns>
+    public static void EntityToEntity(Part Original, Part New)
+    {
+        Original.Number = New.Number;
+        Original.PrintedBy = New.PrintedBy;
+        Original.ScannedBy = New.ScannedBy;
+        Original.Name = New.Name;
+        Original.ModelCode = New.ModelCode;
+    }
+
+    /// <summary>
+    /// Maps values from a Data Access Object (DAO) to a Entities.Part object.
+    /// </summary>
+    /// <param name="Dao"></param>
+    /// <returns></returns>
+    public static Part DaoToEntity(PartDao Dao)
+    {
+        return new Part
+        (
+            Dao.Number,
+            Dao.PrintedBy,
+            Dao.ScannedBy,
+            Dao.Name,
+            Dao.ModelCode
+        );
     }
 }

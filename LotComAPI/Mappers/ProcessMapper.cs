@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Models;
 using LotComAPI.Entities;
 using LotComAPI.Models;
 
@@ -5,60 +6,6 @@ namespace LotComAPI.Mappers;
 
 public static class ProcessMapper
 {
-    /// <summary>
-    /// Converts HTTP arguments into a ProcessDto object.
-    /// </summary>
-    /// <param name="LineCode"></param>
-    /// <param name="LineName"></param>
-    /// <param name="Title"></param>
-    /// <param name="Serialization"></param>
-    /// <param name="Type"></param>
-    /// <param name="Origination"></param>
-    /// <param name="PassThroughType"></param>
-    /// <param name="DoesPrint"></param>
-    /// <param name="DoesScan"></param>
-    /// <param name="UsesJBKNumber"></param>
-    /// <param name="UsesLotNumber"></param>
-    /// <param name="UsesDieNumber"></param>
-    /// <param name="UsesDeburrJBKNumber"></param>
-    /// <param name="UsesHeatNumber"></param>
-    /// <param name="Previous1"></param>
-    /// <param name="Previous2"></param>
-    /// <returns></returns>
-    public static ProcessDto HttpToDto(int LineCode, string LineName, string Title, string? Serialization, string Type, int OriginationBit, string? PassThroughType, int DoesPrintBit, int DoesScanBit, int UsesJBKNumberBit, int UsesLotNumberBit, int UsesDieNumberBit, int UsesDeburrJBKNumberBit, int UsesHeatNumberBit, int? Previous1, int? Previous2)
-    {
-        // convert from bits to bools (0!=0 -> false or x!=0 -> true)
-        // consumes all non-zero digits as true
-        bool Origination = OriginationBit != 0;
-        bool DoesPrint = DoesPrintBit != 0;
-        bool DoesScan = DoesScanBit != 0;
-        bool UsesJBKNumber = UsesJBKNumberBit != 0;
-        bool UsesLotNumber = UsesLotNumberBit != 0;
-        bool UsesDieNumber = UsesDieNumberBit != 0;
-        bool UsesDeburrJBKNumber = UsesDeburrJBKNumberBit != 0;
-        bool UsesHeatNumber = UsesHeatNumberBit != 0;
-        // construct and return Dto
-        return new ProcessDto
-        (
-            LineCode,
-            LineName,
-            Title,
-            Serialization,
-            Type,
-            Origination,
-            PassThroughType,
-            DoesPrint,
-            DoesScan,
-            UsesJBKNumber,
-            UsesLotNumber,
-            UsesDieNumber,
-            UsesDeburrJBKNumber,
-            UsesHeatNumber,
-            Previous1,
-            Previous2
-        );
-    }
-
     /// <summary>
     /// Performs mapping of values from Models.ProcessDto to Entities.Process.
     /// </summary>
@@ -117,5 +64,59 @@ public static class ProcessMapper
         );
         Dto.Id = Entity.Id;
         return Dto;
+    }
+
+    /// <summary>
+    /// Maps New properties to the corresponding Original properties (in essence, updating the object).
+    /// </summary>
+    /// <param name="Original"></param>
+    /// <param name="New"></param>
+    /// <returns></returns>
+    public static void EntityToEntity(Process Original, Process New)
+    {
+        Original.LineCode = New.LineCode;
+        Original.LineName = New.LineName;
+        Original.Title = New.Title;
+        Original.Serialization = New.Serialization;
+        Original.Type = New.Type;
+        Original.Origination = New.Origination;
+        Original.PassThroughType = New.PassThroughType;
+        Original.DoesPrint = New.DoesPrint;
+        Original.DoesScan = New.DoesScan;
+        Original.UsesJBKNumber = New.UsesJBKNumber;
+        Original.UsesLotNumber = New.UsesLotNumber;
+        Original.UsesDieNumber = New.UsesDieNumber;
+        Original.UsesDeburrJBKNumber = New.UsesDeburrJBKNumber;
+        Original.UsesHeatNumber = New.UsesHeatNumber;
+        Original.Previous1 = New.Previous1;
+        Original.Previous2 = New.Previous2;
+    }
+
+    /// <summary>
+    /// Maps values from a Data Access Object (DAO) to an Entities.Process object.
+    /// </summary>
+    /// <param name="Dao"></param>
+    /// <returns></returns>
+    public static Process DaoToEntity(ProcessDao Dao)
+    {
+        return new Process
+        (
+            Dao.LineCode,
+            Dao.LineName,
+            Dao.Title,
+            Dao.Serialization,
+            Dao.Type,
+            Dao.Origination,
+            Dao.PassThroughType,
+            Dao.DoesPrint,
+            Dao.DoesScan,
+            Dao.UsesJBKNumber,
+            Dao.UsesLotNumber,
+            Dao.UsesDieNumber,
+            Dao.UsesDeburrJBKNumber,
+            Dao.UsesHeatNumber,
+            Dao.Previous1,
+            Dao.Previous2
+        );
     }
 }
