@@ -9,7 +9,7 @@ public interface IPrintService
     IEnumerable<Print> GetOnDateByProcess(DateTime Date, int ProcessId);
     Print? Get(int id);
     Print Create(Print Print);
-    void Update(int id, Print Print);
+    bool Update(int id, Print Print);
     void Delete(Print Print);
     bool Save();
 }
