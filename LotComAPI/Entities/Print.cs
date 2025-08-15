@@ -5,7 +5,7 @@ namespace LotComAPI.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Print.
 /// </summary>
-public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     // protected properties (not transfered by DTO Layer)
     [MaxLength(20)]
@@ -32,13 +32,10 @@ public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuanti
     public int? TertiaryQuantity { get; set; } = TertiaryQuantity;
 
     [Required]
-    [MaxLength(1)]
     public int Shift { get; set; } = Shift;
 
-    [MaxLength(1)]
     public int? SecondaryShift { get; set; } = SecondaryShift;
 
-    [MaxLength(1)]
     public int? TertiaryShift { get; set; } = TertiaryShift;
 
     [Required]
@@ -51,16 +48,14 @@ public class Print(int ProcessId, int PartId, int Quantity, int? SecondaryQuanti
     [MaxLength(3)]
     public string? TertiaryOperator { get; set; } = TertiaryOperator;
 
-    [MaxLength(3)]
     public int? JBKNumber { get; set; } = JBKNumber;
 
     [MaxLength(3)]
     public string? LotNumber { get; set; } = LotNumber;
 
     [MaxLength(3)]
-    public int? DieNumber { get; set; } = DieNumber;
+    public string? DieNumber { get; set; } = DieNumber;
 
-    [MaxLength(3)]
     public int? DeburrJBKNumber { get; set; } = DeburrJBKNumber;
 
     public string? HeatNumber { get; set; } = HeatNumber;
