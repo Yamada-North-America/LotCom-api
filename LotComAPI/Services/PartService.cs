@@ -1,6 +1,7 @@
 using LotComAPI.Entities;
 using LotComAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using LotComAPI.Mappers;
 
 namespace LotComAPI.Services;
 
@@ -104,24 +105,26 @@ public class PartService : IPartService
     /// Updates an existing Part in the Database.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="Print"></param>
+    /// <param name="Part"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="NotImplementedException"></exception>
-    public void Update(int id, Part Part)
+    public bool Update(int id, Part Part)
     {
-        // confirm that a valid id was passed
-        if (id > 0)
-        {
-            throw new ArgumentNullException(nameof(id));
-        }
-        // confirm that a Part is passed
+        // confirm a Part is passed
         if (Part is null)
         {
             throw new ArgumentNullException(nameof(Part));
         }
-        throw new NotImplementedException();
-        // Part.Updated = new Timestamp(DateTime.Now).Stamp;
-        // _context.Entry(Part).State = EntityState.Modified
+        // confirm that the Part exists in the Database
+        Part? PartFromDatabase = Get(id);
+        if (PartFromDatabase is null)
+        {
+            return false;
+        }
+        // update the entry in context
+        PartMapper.EntityToEntity(PartFromDatabase, Part);
+        PartFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        _context.Entry(PartFromDatabase).State = EntityState.Modified;
+        return true;
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using LotComAPI.DbContexts;
 using LotComAPI.Entities;
+using LotComAPI.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.Services;
@@ -81,26 +82,29 @@ public class ScanService : IScanService
     }
 
     /// <summary>
-    /// Updates an existing Process in the Database.
+    /// Updates an existing Scan in the Database.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="Entity"></param>
-    /// <exception cref="NotImplementedException"></exception>
-    public void Update(int id, Scan Entity)
+    /// <param name="Scan"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public bool Update(int id, Scan Scan)
     {
-        // confirm that a valid id was passed
-        if (id < 1)
+        // confirm a Scan is passed
+        if (Scan is null)
         {
-            throw new ArgumentNullException(nameof(id));
+            throw new ArgumentNullException(nameof(Scan));
         }
-        // confirm that a Scan was passed
-        if (Entity is null)
+        // confirm that the Scan exists in the Database
+        Scan? ScanFromDatabase = Get(id);
+        if (ScanFromDatabase is null)
         {
-            throw new ArgumentNullException(nameof(Entity));
+            return false;
         }
-        throw new NotImplementedException();
-        // Entity.Updated = new Timestamp(DateTime.Now).Stamp;
-        // _scanContext.Entry(Entity).State = EntityState.Modified;
+        // update the entry in context
+        ScanMapper.EntityToEntity(ScanFromDatabase, Scan);
+        ScanFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        _context.Entry(ScanFromDatabase).State = EntityState.Modified;
+        return true;
     }
 
     /// <summary>

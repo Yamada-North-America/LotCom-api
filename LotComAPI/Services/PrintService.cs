@@ -1,3 +1,4 @@
+using LotComAPI.Mappers;
 using LotComAPI.DbContexts;
 using LotComAPI.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -109,22 +110,24 @@ public class PrintService : IPrintService
     /// <param name="id"></param>
     /// <param name="Print"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="NotImplementedException"></exception>
-    public void Update(int id, Print Print)
+    public bool Update(int id, Print Print)
     {
-        // confirm that a valid id was passed
-        if (id > 0)
-        {
-            throw new ArgumentNullException(nameof(id));
-        }
         // confirm a Print is passed
         if (Print is null)
         {
             throw new ArgumentNullException(nameof(Print));
         }
-        throw new NotImplementedException();
-        // Print.Updated = new Timestamp(DateTime.Now).Stamp;
-        // _context.Entry(Print).State = EntityState.Modified
+        // confirm that the Print exists in the Database
+        Print? PrintFromDatabase = Get(id);
+        if (PrintFromDatabase is null)
+        {
+            return false;
+        }
+        // update the entry in context
+        PrintMapper.EntityToEntity(PrintFromDatabase, Print);
+        PrintFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        _context.Entry(PrintFromDatabase).State = EntityState.Modified;
+        return true;
     }
 
     /// <summary>
