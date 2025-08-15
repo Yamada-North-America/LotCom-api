@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Models;
 using LotComAPI.Entities;
 using LotComAPI.Mappers;
 using LotComAPI.Models;
@@ -44,10 +45,10 @@ public class PartController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("printedById={id}")]
-    public ActionResult<IEnumerable<PartDto>> GetAllPrintedBy(int id)
+    [HttpGet("printedById")]
+    public ActionResult<IEnumerable<PartDto>> GetAllPrintedBy([FromQuery] int processId)
     {
-        IEnumerable<Part> PartsFromDatabase = _partService.GetPrintedBy(id);
+        IEnumerable<Part> PartsFromDatabase = _partService.GetPrintedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
             .Select(PartMapper.EntityToDto);
@@ -59,10 +60,10 @@ public class PartController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("scannedById={id}")]
-    public ActionResult<IEnumerable<PartDto>> GetAllScannedBy(int id)
+    [HttpGet("scannedById")]
+    public ActionResult<IEnumerable<PartDto>> GetAllScannedBy([FromQuery] int processId)
     {
-        IEnumerable<Part> PartsFromDatabase = _partService.GetScannedBy(id);
+        IEnumerable<Part> PartsFromDatabase = _partService.GetScannedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
             .Select(PartMapper.EntityToDto);
@@ -91,19 +92,10 @@ public class PartController : ControllerBase
     /// <param name="Part">The Part object that will be POSTed to the database.</param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PartDto> Create(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
+    public ActionResult<PartDto> Create([FromBody] PartDao Dao)
     {
-        // collect a Dto from the HTTP request parameters
-        PartDto Dto = PartMapper.HttpToDto
-        (
-            Number,
-            PrintedBy,
-            ScannedBy,
-            Name,
-            ModelCode
-        );
-        // map the new Part (as a Dto) to an entity and add it to the Db
-        Part Entity = PartMapper.DtoToEntity(Dto);
+        // map the new Part (as a DAO from the Data Access Layer) to an entity and add it to the Db
+        Part Entity = PartMapper.DaoToEntity(Dao);
         Entity = _partService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         PartDto PartToReturn = PartMapper.EntityToDto(Entity);
@@ -120,12 +112,22 @@ public class PartController : ControllerBase
     /// <summary>
     /// Processes a PUT HTTP request to update a single Part object in the database.
     /// </summary>
-    /// <param name="id">The unique ID of the object that is requested.</param>
-    /// <param name="Part">The Part object that will be POSTed to the database.</param>
     /// <returns></returns>
-    [HttpPut]
-    public IActionResult Update(int id, Part Part)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] PartDao Dao)
     {
+        // confirm an id was passed
+        if (Dao is null || id != Dao.Id)
+        {
+            return BadRequest();
+        }
+        // update the Entity with the service
+        bool Result = _partService.Update(id, PartMapper.DaoToEntity(Dao));
+        if (!Result)
+        {
+            return NotFound();
+        }
+        _partService.Save();
         return NoContent();
     }
 

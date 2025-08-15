@@ -1,3 +1,4 @@
+using LotCom.DataAccess.Models;
 using LotComAPI.Entities;
 using LotComAPI.Mappers;
 using LotComAPI.Models;
@@ -58,53 +59,12 @@ public class ScanController : ControllerBase
     /// <summary>
     /// Processes a POST HTTP request to add a single Scan object to the database.
     /// </summary>
-    /// <param name="Date"></param>
-    /// <param name="Address"></param>
-    /// <param name="ProcessId"></param>
-    /// <param name="PartId"></param>
-    /// <param name="Quantity"></param>
-    /// <param name="SecondaryQuantity"></param>
-    /// <param name="TertiaryQuantity"></param>
-    /// <param name="Shift"></param>
-    /// <param name="SecondaryShift"></param>
-    /// <param name="TertiaryShift"></param>
-    /// <param name="Operator"></param>
-    /// <param name="SecondaryOperator"></param>
-    /// <param name="TertiaryOperator"></param>
-    /// <param name="JBKNumber"></param>
-    /// <param name="LotNumber"></param>
-    /// <param name="DieNumber"></param>
-    /// <param name="DeburrJBKNumber"></param>
-    /// <param name="HeatNumber"></param>
-    /// <param name="ProductionDate"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ScanDto> Create(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+    public ActionResult<ScanDto> Create([FromBody] ScanDao Dao)
     {
-        ScanDto DtoFromHttp = ScanMapper.HttpToDto
-        (
-            Date,
-            Address,
-            ProcessId,
-            PartId,
-            Quantity,
-            SecondaryQuantity,
-            TertiaryQuantity,
-            Shift,
-            SecondaryShift,
-            TertiaryShift,
-            Operator,
-            SecondaryOperator,
-            TertiaryOperator,
-            JBKNumber,
-            LotNumber,
-            DieNumber,
-            DeburrJBKNumber,
-            HeatNumber,
-            ProductionDate
-        );
-        // map the new Scan (as a Dto) to an entity and add it to the Db
-        Scan Entity = ScanMapper.DtoToEntity(DtoFromHttp);
+        // map the new Scan (as a DAO from the Data Access Layer) to an entity and add it to the Db
+        Scan Entity = ScanMapper.DaoToEntity(Dao);
         Entity = _scanService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         ScanDto ScanToReturn = ScanMapper.EntityToDto(Entity);
@@ -121,26 +81,22 @@ public class ScanController : ControllerBase
     /// <summary>
     /// Processes a PUT HTTP request to update a single Scan object in the database.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="Scan"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    [HttpPut]
-    public IActionResult Update(int id, Scan Scan)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] ScanDao Dao)
     {
-        if (id < 1)
+        // confirm an id was passed
+        if (Dao is null || id != Dao.Id)
         {
             return BadRequest();
         }
-        if (Scan is null)
-        {
-            return BadRequest();
-        }
-        Scan? ScanFromDatabase = _scanService.Get(id);
-        if (ScanFromDatabase is null)
+        // update the Entity with the service
+        bool Result = _scanService.Update(id, ScanMapper.DaoToEntity(Dao));
+        if (!Result)
         {
             return NotFound();
         }
+        _scanService.Save();
         return NoContent();
     }
 

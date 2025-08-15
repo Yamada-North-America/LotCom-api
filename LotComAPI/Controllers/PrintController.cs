@@ -3,6 +3,7 @@ using LotComAPI.Entities;
 using Microsoft.AspNetCore.Mvc;
 using LotComAPI.Models;
 using LotComAPI.Mappers;
+using LotCom.DataAccess.Models;
 
 namespace LotComAPI.Controllers;
 
@@ -102,34 +103,12 @@ public class PrintController : ControllerBase
     /// <summary>
     /// Processes a POST HTTP request to add a single Print object to the database. 
     /// </summary>
-    /// <param name="Print">The Print object that will be POSTed to the database.</param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PrintDto> Create(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? HeatNumber = null)
+    public ActionResult<PrintDto> Create([FromBody] PrintDao Dao)
     {
-        // collect a Dto from the HTTP request parameters
-        PrintDto DtoFromHttp = PrintMapper.HttpToDto
-        (
-            ProcessId,
-            PartId,
-            Quantity,
-            Shift,
-            Operator,
-            ProductionDate,
-            SecondaryQuantity,
-            TertiaryQuantity,
-            SecondaryShift,
-            TertiaryShift,
-            SecondaryOperator,
-            TertiaryOperator,
-            JBKNumber,
-            LotNumber,
-            DieNumber,
-            DeburrJBKNumber,
-            HeatNumber
-        );
-        // map the new Print (as a Dto) to an entity and add it to the Db
-        Print Entity = PrintMapper.DtoToEntity(DtoFromHttp);
+        // map the new Print (as a DAO from the Data Access Layer) to an entity and add it to the Db
+        Print Entity = PrintMapper.DaoToEntity(Dao);
         Entity = _printService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         PrintDto PrintToReturn = PrintMapper.EntityToDto(Entity);
@@ -146,12 +125,22 @@ public class PrintController : ControllerBase
     /// <summary>
     /// Processes a PUT HTTP request to update a single Print object in the database.
     /// </summary>
-    /// <param name="id">The unique ID of the object that is requested.</param>
-    /// <param name="Print">The Print object that will be POSTed to the database.</param>
     /// <returns></returns>
-    [HttpPut]
-    public IActionResult Update(int id, Print Print)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] PrintDao Dao)
     {
+        // confirm an id was passed
+        if (Dao is null || id != Dao.Id)
+        {
+            return BadRequest();
+        }
+        // update the Entity with the service
+        bool Result = _printService.Update(id, PrintMapper.DaoToEntity(Dao));
+        if (!Result)
+        {
+            return NotFound();
+        }
+        _printService.Save();
         return NoContent();
     }
 

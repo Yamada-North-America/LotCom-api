@@ -26,8 +26,8 @@ public class SerialController : ControllerBase
     /// Processes a GET HTTP request for the next JBK Number for a Part in the database.
     /// </summary>
     /// <returns></returns>
-    [HttpGet("consumeJBKFor={partId}")]
-    public ActionResult<int> GetNextJBK(int partId)
+    [HttpGet("consumeJBKFor")]
+    public ActionResult<int> GetNextJBK([FromQuery] int partId)
     {
         int? NumberFromDatabase = _serialService.GetNextJBK(partId);
         // ensure the requested Part has a Serial Feed
@@ -42,8 +42,8 @@ public class SerialController : ControllerBase
     /// Processes a GET HTTP request for the next Lot Number for a Part in the database.
     /// </summary>
     /// <returns></returns>
-    [HttpGet("consumeLotFor={partId}")]
-    public ActionResult<int> GetNextLot(int partId)
+    [HttpGet("consumeLotFor")]
+    public ActionResult<int> GetNextLot([FromQuery] int partId)
     {
         int? NumberFromDatabase = _serialService.GetNextLot(partId);
         // ensure the requested Part has a Serial Feed
