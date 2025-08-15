@@ -3,7 +3,7 @@ namespace LotComAPI.Models;
 /// <summary>
 /// Defines the publicly-available entity structure of a Print.
 /// </summary>
-public class PrintDto(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class PrintDto(int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     public int Id { get; set; }
 
@@ -33,7 +33,7 @@ public class PrintDto(int ProcessId, int PartId, int Quantity, int? SecondaryQua
 
     public string? LotNumber { get; set; } = LotNumber;
 
-    public int? DieNumber { get; set; } = DieNumber;
+    public string? DieNumber { get; set; } = DieNumber;
 
     public int? DeburrJBKNumber { get; set; } = DeburrJBKNumber;
 

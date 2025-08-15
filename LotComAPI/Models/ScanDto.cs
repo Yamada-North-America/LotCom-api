@@ -3,26 +3,7 @@ namespace LotComAPI.Models;
 /// <summary>
 /// Defines the publicly-available entity structure of a Scan.
 /// </summary>
-/// <param name="Date"></param>
-/// <param name="Address"></param>
-/// <param name="ProcessId"></param>
-/// <param name="PartId"></param>
-/// <param name="Quantity"></param>
-/// <param name="SecondaryQuantity"></param>
-/// <param name="TertiaryQuantity"></param>
-/// <param name="Shift"></param>
-/// <param name="SecondaryShift"></param>
-/// <param name="TertiaryShift"></param>
-/// <param name="Operator"></param>
-/// <param name="SecondaryOperator"></param>
-/// <param name="TertiaryOperator"></param>
-/// <param name="JBKNumber"></param>
-/// <param name="LotNumber"></param>
-/// <param name="DieNumber"></param>
-/// <param name="DeburrJBKNumber"></param>
-/// <param name="HeatNumber"></param>
-/// <param name="ProductionDate"></param>
-public class ScanDto(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class ScanDto(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     public int Id { get; set; } = 0;
 
@@ -56,7 +37,7 @@ public class ScanDto(string Date, string Address, int ProcessId, int PartId, int
 
     public string? LotNumber { get; set; } = LotNumber;
 
-    public int? DieNumber { get; set; } = DieNumber;
+    public string? DieNumber { get; set; } = DieNumber;
 
     public int? DeburrJBKNumber { get; set; } = DeburrJBKNumber;
 
