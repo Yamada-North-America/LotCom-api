@@ -1,5 +1,6 @@
 using LotComAPI.DbContexts;
 using LotComAPI.Entities;
+using LotComAPI.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.Services;
@@ -36,6 +37,15 @@ public class ProcessService : IProcessService
     public IEnumerable<Process> GetAll()
     {
         return _context.Processes;
+    }
+
+
+    public IEnumerable<Process> GetAllFromStoredProcedure()
+    {
+        IEnumerable<Process> ProcessesFromSP = _context
+            .Set<Process>()
+            .FromSql($"EXEC dbo.GetAllProcesses");
+        return ProcessesFromSP;
     }
 
     /// <summary>
@@ -83,24 +93,26 @@ public class ProcessService : IProcessService
     /// Updates an existing Process in the Database.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="Entity"></param>
+    /// <param name="Process"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="NotImplementedException"></exception>
-    public void Update(int id, Process Entity)
+    public bool Update(int id, Process Process)
     {
-        // confirm that a valid id was passed
-        if (id < 1)
-        {
-            throw new ArgumentNullException(nameof(id));
-        }
         // confirm a Process is passed
-        if (Entity is null)
+        if (Process is null)
         {
-            throw new ArgumentNullException(nameof(Print));
+            throw new ArgumentNullException(nameof(Process));
         }
-        throw new NotImplementedException();
-        // Entity.Updated = new Timestamp(DateTime.Now).Stamp;
-        // _context.Entry(Print).State = EntityState.Modified
+        // confirm that the Process exists in the Database
+        Process? ProcessFromDatabase = Get(id);
+        if (ProcessFromDatabase is null)
+        {
+            return false;
+        }
+        // update the entry in context
+        ProcessMapper.EntityToEntity(ProcessFromDatabase, Process);
+        ProcessFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        _context.Entry(ProcessFromDatabase).State = EntityState.Modified;
+        return true;
     }
 
     /// <summary>
