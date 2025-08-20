@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace LotComAPI.Entities;
 
 /// <summary>
 /// Defines the Database entity structure of a Scan.
 /// </summary>
-/// <param name="Date"></param>
-/// <param name="Address"></param>
-/// <param name="ProcessId"></param>
+/// <param name="ScanProcessId"></param>
+/// <param name="ScanDate"></param>
+/// <param name="ScanAddress"></param>
+/// <param name="LabelProcessId"></param>
 /// <param name="PartId"></param>
 /// <param name="Quantity"></param>
 /// <param name="SecondaryQuantity"></param>
@@ -24,7 +26,7 @@ namespace LotComAPI.Entities;
 /// <param name="DeburrJBKNumber"></param>
 /// <param name="HeatNumber"></param>
 /// <param name="ProductionDate"></param>
-public class Scan(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class Scan(int ScanProcessId, string ScanDate, string ScanAddress, int LabelProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     // protected properties (not transfered by DTO Layer)
     [MaxLength(20)]
@@ -36,17 +38,20 @@ public class Scan(string Date, string Address, int ProcessId, int PartId, int Qu
     // open properties (transfered by DTO Layer)
     [Key]
     public int Id { get; set; } = 0;
+    
+    [Required]
+    public int ScanProcessId { get; set; } = ScanProcessId;
 
     [Required]
     [MaxLength(20)]
-    public string Date { get; set; } = Date;
+    public string ScanDate { get; set; } = ScanDate;
 
     [Required]
     [MaxLength(15)]
-    public string Address { get; set; } = Address;
+    public string ScanAddress { get; set; } = ScanAddress;
 
     [Required]
-    public int ProcessId { get; set; } = ProcessId;
+    public int LabelProcessId { get; set; } = LabelProcessId;
 
     [Required]
     public int PartId { get; set; } = PartId;
@@ -89,4 +94,28 @@ public class Scan(string Date, string Address, int ProcessId, int PartId, int Qu
 
     [Required]
     public string ProductionDate { get; set; } = ProductionDate;
+
+    /// <summary>
+    /// Checks if DateToCompare is within 0 and RangeInDays days before the Created Date of this Scan.
+    /// </summary>
+    /// <param name="RangeInDays"></param>
+    /// <param name="DateToCompare"></param>
+    /// <returns></returns>
+    public bool CompareDateWithinRange(int RangeInDays, DateTime DateToCompare)
+    {
+        // convert this entity Created Date to a Datetime and subtract the comparison date
+        DateTime ThisDate = DateTime.ParseExact(Created, "MM/dd/yyyy-HH:mm:ss", CultureInfo.InvariantCulture);
+        TimeSpan Difference = DateToCompare.Subtract(ThisDate);
+        // check if the difference is between 0 and RangeInDays days
+        if (Difference.Days > RangeInDays || Difference.Days < 0)
+        {
+            // either too old or newer than this Scan
+            return false;
+        }
+        // Date to compare was between 0 and RangeInDays days in the past
+        else
+        {
+            return true;
+        }
+    }
 }
