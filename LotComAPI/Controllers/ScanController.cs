@@ -41,6 +41,24 @@ public class ScanController : ControllerBase
     }
 
     /// <summary>
+    /// Processes a GET HTTP request for all of the Scan objects within a set range from current date in the database.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("within")]
+    public ActionResult<IEnumerable<ScanDto>> GetAllWithinRange([FromQuery] int days)
+    {
+        IEnumerable<Scan>? ScansFromDatabase = _scanService.GetAllWithinRange(days);
+        if (ScansFromDatabase is null)
+        {
+            return BadRequest();
+        }
+        // convert each of the Scan entities into a Dto
+        IEnumerable<ScanDto> Dtos = ScansFromDatabase
+            .Select(ScanMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
     /// Processes a GET HTTP request for a single Print object in the database.
     /// </summary>
     /// <param name="id"></param>
