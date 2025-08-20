@@ -5,7 +5,7 @@ namespace LotComAPI.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Part.
 /// </summary>
-public class Part(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
+public class PartEntity(string Number, int PrintedBy, int ScannedBy, string Name, string ModelCode)
 {
     // protected properties (not transfered by DTO Layer)
     [MaxLength(20)]

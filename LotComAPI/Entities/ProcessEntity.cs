@@ -5,7 +5,7 @@ namespace LotComAPI.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Process.
 /// </summary>
-public class Process(int LineCode, string LineName, string Title, string? Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int? Previous1, int? Previous2)
+public class ProcessEntity(int LineCode, string LineName, string Title, string? Serialization, string Type, bool Origination, string? PassThroughType, bool DoesPrint, bool DoesScan, bool UsesJBKNumber, bool UsesLotNumber, bool UsesDieNumber, bool UsesDeburrJBKNumber, bool UsesHeatNumber, int? Previous1, int? Previous2)
 {
     // sensitive properties (not transfered by DTO Layer)
     [MaxLength(20)]

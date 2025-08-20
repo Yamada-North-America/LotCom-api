@@ -6,27 +6,7 @@ namespace LotComAPI.Entities;
 /// <summary>
 /// Defines the Database entity structure of a Scan.
 /// </summary>
-/// <param name="ScanProcessId"></param>
-/// <param name="ScanDate"></param>
-/// <param name="ScanAddress"></param>
-/// <param name="LabelProcessId"></param>
-/// <param name="PartId"></param>
-/// <param name="Quantity"></param>
-/// <param name="SecondaryQuantity"></param>
-/// <param name="TertiaryQuantity"></param>
-/// <param name="Shift"></param>
-/// <param name="SecondaryShift"></param>
-/// <param name="TertiaryShift"></param>
-/// <param name="Operator"></param>
-/// <param name="SecondaryOperator"></param>
-/// <param name="TertiaryOperator"></param>
-/// <param name="JBKNumber"></param>
-/// <param name="LotNumber"></param>
-/// <param name="DieNumber"></param>
-/// <param name="DeburrJBKNumber"></param>
-/// <param name="HeatNumber"></param>
-/// <param name="ProductionDate"></param>
-public class Scan(int ScanProcessId, string ScanDate, string ScanAddress, int LabelProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class ScanEntity(int ScanProcessId, string ScanDate, string ScanAddress, int LabelProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     // protected properties (not transfered by DTO Layer)
     [MaxLength(20)]
