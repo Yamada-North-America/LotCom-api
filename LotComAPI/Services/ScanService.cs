@@ -58,6 +58,23 @@ public class ScanService : IScanService
     }
 
     /// <summary>
+    /// Queries all of the existing Scans that occurred within a given range (from the current date) from the Scan database.
+    /// </summary>
+    /// <param name="days">Must be at least 0 (non-negative).</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public IEnumerable<Scan>? GetAllWithinRange(int days)
+    {
+        // confirm that a valid day range was passed
+        if (days < 0)
+        {
+            return null;
+        }
+        return _context.Scans.AsEnumerable()
+            .Where(x => x.CompareDateWithinRange(days, DateTime.Now));
+    }
+
+    /// <summary>
     /// Creates a new Scan in the Database.
     /// </summary>
     /// <param name="Entity"></param>
