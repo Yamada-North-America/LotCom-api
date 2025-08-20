@@ -11,7 +11,7 @@ public class PartContext : DbContext
     /// <summary>
     /// Contains the current set of Parts in the Database context.
     /// </summary>
-    public DbSet<Part> Parts { get; set; }
+    public DbSet<PartEntity> Parts { get; set; }
 
     public PartContext(DbContextOptions<PartContext> Options) : base(Options)
     {

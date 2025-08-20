@@ -33,7 +33,7 @@ public class ProcessController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ProcessDto>> Get()
     {
-        IEnumerable<Process> ProcessesFromDatabase = _processService.GetAllFromStoredProcedure();
+        IEnumerable<ProcessEntity> ProcessesFromDatabase = _processService.GetAllFromStoredProcedure();
         return Ok(ProcessesFromDatabase
             .Select(ProcessMapper.EntityToDto));
     }
@@ -46,7 +46,7 @@ public class ProcessController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ProcessDto> Get(int id)
     {
-        Process? ProcessFromDatabase = _processService.Get(id);
+        ProcessEntity? ProcessFromDatabase = _processService.Get(id);
         if (ProcessFromDatabase is null)
         {
             return NotFound();
@@ -61,7 +61,7 @@ public class ProcessController : ControllerBase
     [HttpPost]
     public ActionResult<ProcessDto> Create([FromBody] ProcessDao Dao)
     {
-        Process Entity = ProcessMapper.DaoToEntity(Dao);
+        ProcessEntity Entity = ProcessMapper.DaoToEntity(Dao);
         Entity = _processService.Create(Entity);
         ProcessDto DtoToReturn = ProcessMapper.EntityToDto(Entity);
         return new CreatedAtActionResult
@@ -103,7 +103,7 @@ public class ProcessController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        Process? ProcessFromDatabase = _processService.Get(id);
+        ProcessEntity? ProcessFromDatabase = _processService.Get(id);
         if (ProcessFromDatabase is null)
         {
             return NotFound();

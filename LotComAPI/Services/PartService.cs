@@ -34,7 +34,7 @@ public class PartService : IPartService
     /// Queries all of the existing Parts from the Part Database.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Part> GetAll()
+    public IEnumerable<PartEntity> GetAll()
     {
         return _context.Parts;
     }
@@ -44,7 +44,7 @@ public class PartService : IPartService
     /// </summary>
     /// <param name="ProcessId"></param>
     /// <returns></returns>
-    public IEnumerable<Part> GetPrintedBy(int ProcessId)
+    public IEnumerable<PartEntity> GetPrintedBy(int ProcessId)
     {
         return _context.Parts
             .Where(x => x.PrintedBy.Equals(ProcessId));
@@ -55,7 +55,7 @@ public class PartService : IPartService
     /// </summary>
     /// <param name="ProcessId"></param>
     /// <returns></returns>
-    public IEnumerable<Part> GetScannedBy(int ProcessId)
+    public IEnumerable<PartEntity> GetScannedBy(int ProcessId)
     {
         return _context.Parts
             .Where(x => x.ScannedBy.Equals(ProcessId));
@@ -67,7 +67,7 @@ public class PartService : IPartService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Part? Get(int id)
+    public PartEntity? Get(int id)
     {
         // confirm that a valid id was passed
         if (id < 0)
@@ -84,7 +84,7 @@ public class PartService : IPartService
     /// </summary>
     /// <param name="Print"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public Part Create(Part Part)
+    public PartEntity Create(PartEntity Part)
     {
         // confirm a Part is passed
         if (Part is null)
@@ -107,7 +107,7 @@ public class PartService : IPartService
     /// <param name="id"></param>
     /// <param name="Part"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public bool Update(int id, Part Part)
+    public bool Update(int id, PartEntity Part)
     {
         // confirm a Part is passed
         if (Part is null)
@@ -115,7 +115,7 @@ public class PartService : IPartService
             throw new ArgumentNullException(nameof(Part));
         }
         // confirm that the Part exists in the Database
-        Part? PartFromDatabase = Get(id);
+        PartEntity? PartFromDatabase = Get(id);
         if (PartFromDatabase is null)
         {
             return false;
@@ -131,7 +131,7 @@ public class PartService : IPartService
     /// Removes an existing Part from the Database.
     /// </summary>
     /// <param name="Print"></param>
-    public void Delete(Part Part)
+    public void Delete(PartEntity Part)
     {
         // remove the Part from the DbSet and set its state
         _context.Parts.Remove(Part);

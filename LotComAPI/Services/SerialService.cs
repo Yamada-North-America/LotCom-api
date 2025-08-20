@@ -34,7 +34,7 @@ public class SerialService : ISerialService
     /// </summary>
     /// <param name="PartId"></param>
     /// <returns></returns>
-    private SerialSet? UpdateNextJBK(int PartId)
+    private SerialSetEntity? UpdateNextJBK(int PartId)
     {
         // ensure a valid Part Id was passed
         if (PartId is < 1)
@@ -42,7 +42,7 @@ public class SerialService : ISerialService
             return null;
         }
         // retrieve the Serial Feed for the Part
-        SerialSet? SerialFromDatabase = _context.Serials
+        SerialSetEntity? SerialFromDatabase = _context.Serials
             .Where(x => x.PartId.Equals(PartId))
             .FirstOrDefault();
         if (SerialFromDatabase is null)
@@ -72,7 +72,7 @@ public class SerialService : ISerialService
     /// </summary>
     /// <param name="PartId"></param>
     /// <returns></returns>
-    private SerialSet? UpdateNextLot(int PartId)
+    private SerialSetEntity? UpdateNextLot(int PartId)
     {
         // ensure a valid Part Id was passed
         if (PartId is < 1)
@@ -80,7 +80,7 @@ public class SerialService : ISerialService
             return null;
         }
         // retrieve the Serial Feed for the Part
-        SerialSet? SerialFromDatabase = _context.Serials
+        SerialSetEntity? SerialFromDatabase = _context.Serials
             .Where(x => x.PartId.Equals(PartId))
             .FirstOrDefault();
         if (SerialFromDatabase is null)
@@ -118,7 +118,7 @@ public class SerialService : ISerialService
             return null;
         }
         // retrieve the Serial Feed from the Database
-        SerialSet? SerialFromDatabase = _context.Serials
+        SerialSetEntity? SerialFromDatabase = _context.Serials
             .Where(x => x.PartId.Equals(PartId))
             .FirstOrDefault();
         if (SerialFromDatabase is null)
@@ -145,7 +145,7 @@ public class SerialService : ISerialService
             return null;
         }
         // retrieve the Serial Feed from the Database
-        SerialSet? SerialFromDatabase = _context.Serials
+        SerialSetEntity? SerialFromDatabase = _context.Serials
             .Where(x => x.PartId.Equals(PartId))
             .FirstOrDefault();
         if (SerialFromDatabase is null)

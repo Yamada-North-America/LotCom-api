@@ -7,13 +7,13 @@ namespace LotComAPI.Mappers;
 public static class PartMapper
 {
     /// <summary>
-    /// Performs mapping of values from Models.PartDto to Entities.Part. 
+    /// Performs mapping of values from Models.PartDto to Entities.PartEntity. 
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static Part DtoToEntity(PartDto Dto)
+    public static PartEntity DtoToEntity(PartDto Dto)
     {
-        Part Entity = new Part
+        PartEntity Entity = new PartEntity
         (
             Dto.Number,
             Dto.PrintedBy,
@@ -26,11 +26,11 @@ public static class PartMapper
     }
 
     /// <summary>
-    /// Performs mapping of values from Entities.Part to Models.PartDto.
+    /// Performs mapping of values from Entities.PartEntity to Models.PartDto.
     /// </summary>
     /// <param name="Entity"></param>
     /// <returns></returns>
-    public static PartDto EntityToDto(Part Entity)
+    public static PartDto EntityToDto(PartEntity Entity)
     {
         PartDto Dto = new PartDto
         (
@@ -50,7 +50,7 @@ public static class PartMapper
     /// <param name="Original"></param>
     /// <param name="New"></param>
     /// <returns></returns>
-    public static void EntityToEntity(Part Original, Part New)
+    public static void EntityToEntity(PartEntity Original, PartEntity New)
     {
         Original.Number = New.Number;
         Original.PrintedBy = New.PrintedBy;
@@ -60,13 +60,13 @@ public static class PartMapper
     }
 
     /// <summary>
-    /// Maps values from a Data Access Object (DAO) to a Entities.Part object.
+    /// Maps values from a Data Access Object (DAO) to a Entities.PartEntity object.
     /// </summary>
     /// <param name="Dao"></param>
     /// <returns></returns>
-    public static Part DaoToEntity(PartDao Dao)
+    public static PartEntity DaoToEntity(PartDao Dao)
     {
-        return new Part
+        return new PartEntity
         (
             Dao.Number,
             Dao.PrintedBy,

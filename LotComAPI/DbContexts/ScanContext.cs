@@ -11,7 +11,7 @@ public class ScanContext : DbContext
     /// <summary>
     /// Contains the current set of Scans in the Database context.
     /// </summary>
-    public DbSet<Scan> Scans { get; set; }
+    public DbSet<ScanEntity> Scans { get; set; }
 
     public ScanContext(DbContextOptions<ScanContext> Options) : base(Options)
     {

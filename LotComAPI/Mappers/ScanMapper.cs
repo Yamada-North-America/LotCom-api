@@ -7,13 +7,13 @@ namespace LotComAPI.Mappers;
 public static class ScanMapper
 {
     /// <summary>
-    /// Performs mapping of values from Models.ScanDto to Entities.Scan.
+    /// Performs mapping of values from Models.ScanDto to Entities.ScanEntity.
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static Scan DtoToEntity(ScanDto Dto)
+    public static ScanEntity DtoToEntity(ScanDto Dto)
     {
-        Scan Entity = new Scan
+        ScanEntity Entity = new ScanEntity
         (
             Dto.ScanProcessId,
             Dto.ScanDate,
@@ -41,11 +41,11 @@ public static class ScanMapper
     }
 
     /// <summary>
-    /// Performs mapping of values from Entities.Scan to Models.ScanDto.
+    /// Performs mapping of values from Entities.ScanEntity to Models.ScanDto.
     /// </summary>
     /// <param name="Entity"></param>
     /// <returns></returns>
-    public static ScanDto EntityToDto(Scan Entity)
+    public static ScanDto EntityToDto(ScanEntity Entity)
     {
         ScanDto Dto = new ScanDto
         (
@@ -80,7 +80,7 @@ public static class ScanMapper
     /// <param name="Original"></param>
     /// <param name="New"></param>
     /// <returns></returns>
-    public static void EntityToEntity(Scan Original, Scan New)
+    public static void EntityToEntity(ScanEntity Original, ScanEntity New)
     {
         Original.ScanProcessId = New.ScanProcessId;
         Original.ScanDate = New.ScanDate;
@@ -105,13 +105,13 @@ public static class ScanMapper
     }
 
     /// <summary>
-    /// Maps values from a Data Access Object (DAO) to an Entities.Scan object.
+    /// Maps values from a Data Access Object (DAO) to an Entities.ScanEntity object.
     /// </summary>
     /// <param name="Dao"></param>
     /// <returns></returns>
-    public static Scan DaoToEntity(ScanDao Dao)
+    public static ScanEntity DaoToEntity(ScanDao Dao)
     {
-        return new Scan
+        return new ScanEntity
         (
             Dao.ScanProcessId,
             Dao.ScanDate

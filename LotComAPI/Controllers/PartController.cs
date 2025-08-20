@@ -33,7 +33,7 @@ public class PartController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<PartDto>> GetAll()
     {
-        IEnumerable<Part> PartsFromDatabase = _partService.GetAll();
+        IEnumerable<PartEntity> PartsFromDatabase = _partService.GetAll();
         // convert each of the Print entities into a Dto
         IEnumerable<PartDto> Dtos = PartsFromDatabase
             .Select(PartMapper.EntityToDto);
@@ -48,7 +48,7 @@ public class PartController : ControllerBase
     [HttpGet("printedById")]
     public ActionResult<IEnumerable<PartDto>> GetAllPrintedBy([FromQuery] int processId)
     {
-        IEnumerable<Part> PartsFromDatabase = _partService.GetPrintedBy(processId);
+        IEnumerable<PartEntity> PartsFromDatabase = _partService.GetPrintedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
             .Select(PartMapper.EntityToDto);
@@ -63,7 +63,7 @@ public class PartController : ControllerBase
     [HttpGet("scannedById")]
     public ActionResult<IEnumerable<PartDto>> GetAllScannedBy([FromQuery] int processId)
     {
-        IEnumerable<Part> PartsFromDatabase = _partService.GetScannedBy(processId);
+        IEnumerable<PartEntity> PartsFromDatabase = _partService.GetScannedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
             .Select(PartMapper.EntityToDto);
@@ -78,7 +78,7 @@ public class PartController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<PartDto> Get(int id)
     {
-        Part? PartFromDatabase = _partService.Get(id);
+        PartEntity? PartFromDatabase = _partService.Get(id);
         if (PartFromDatabase is null)
         {
             return NotFound();
@@ -95,7 +95,7 @@ public class PartController : ControllerBase
     public ActionResult<PartDto> Create([FromBody] PartDao Dao)
     {
         // map the new Part (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        Part Entity = PartMapper.DaoToEntity(Dao);
+        PartEntity Entity = PartMapper.DaoToEntity(Dao);
         Entity = _partService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         PartDto PartToReturn = PartMapper.EntityToDto(Entity);
@@ -139,7 +139,7 @@ public class PartController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        Part? PartFromDatabase = _partService.Get(id);
+        PartEntity? PartFromDatabase = _partService.Get(id);
         if (PartFromDatabase is null)
         {
             return NotFound();

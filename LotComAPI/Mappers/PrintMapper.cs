@@ -7,13 +7,13 @@ namespace LotComAPI.Mappers;
 public static class PrintMapper
 {
     /// <summary>
-    /// Performs mapping of values from Models.PrintDto to Entities.Print. 
+    /// Performs mapping of values from Models.PrintDto to Entities.PrintEntity. 
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static Print DtoToEntity(PrintDto Dto)
+    public static PrintEntity DtoToEntity(PrintDto Dto)
     {
-        Print Mapped = new Print
+        PrintEntity Mapped = new PrintEntity
         (
             ProcessId: Dto.ProcessId,
             PartId: Dto.PartId,
@@ -38,11 +38,11 @@ public static class PrintMapper
     }
 
     /// <summary>
-    /// Performs mapping of values from Entities.Print to Models.PrintDto.
+    /// Performs mapping of values from Entities.PrintEntity to Models.PrintDto.
     /// </summary>
     /// <param name="Entity"></param>
     /// <returns></returns>
-    public static PrintDto EntityToDto(Print Entity)
+    public static PrintDto EntityToDto(PrintEntity Entity)
     {
         PrintDto Mapped = new PrintDto
         (
@@ -74,7 +74,7 @@ public static class PrintMapper
     /// <param name="Original"></param>
     /// <param name="New"></param>
     /// <returns></returns>
-    public static void EntityToEntity(Print Original, Print New)
+    public static void EntityToEntity(PrintEntity Original, PrintEntity New)
     {
         Original.ProcessId = New.ProcessId;
         Original.PartId = New.PartId;
@@ -96,13 +96,13 @@ public static class PrintMapper
     }
 
     /// <summary>
-    /// Maps values from a Data Access Object (DAO) to an Entities.Print object.
+    /// Maps values from a Data Access Object (DAO) to an Entities.PrintEntity object.
     /// </summary>
     /// <param name="Dao"></param>
     /// <returns></returns>
-    public static Print DaoToEntity(PrintDao Dao)
+    public static PrintEntity DaoToEntity(PrintDao Dao)
     {
-        return new Print
+        return new PrintEntity
         (
             Dao.ProcessId,
             Dao.PartId,

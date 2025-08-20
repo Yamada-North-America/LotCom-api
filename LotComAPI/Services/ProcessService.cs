@@ -34,16 +34,16 @@ public class ProcessService : IProcessService
     /// Queries all of the existing Processes from the Process Database.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Process> GetAll()
+    public IEnumerable<ProcessEntity> GetAll()
     {
         return _context.Processes;
     }
 
 
-    public IEnumerable<Process> GetAllFromStoredProcedure()
+    public IEnumerable<ProcessEntity> GetAllFromStoredProcedure()
     {
-        IEnumerable<Process> ProcessesFromSP = _context
-            .Set<Process>()
+        IEnumerable<ProcessEntity> ProcessesFromSP = _context
+            .Set<ProcessEntity>()
             .FromSql($"EXEC dbo.GetAllProcesses");
         return ProcessesFromSP;
     }
@@ -53,7 +53,7 @@ public class ProcessService : IProcessService
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Process? Get(int id)
+    public ProcessEntity? Get(int id)
     {
         // confirm that a valid id was passed
         if (id < 1)
@@ -71,7 +71,7 @@ public class ProcessService : IProcessService
     /// <param name="Entity"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Process Create(Process Entity)
+    public ProcessEntity Create(ProcessEntity Entity)
     {
         // confirm that a Process was passed
         if (Entity is null)
@@ -95,7 +95,7 @@ public class ProcessService : IProcessService
     /// <param name="id"></param>
     /// <param name="Process"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public bool Update(int id, Process Process)
+    public bool Update(int id, ProcessEntity Process)
     {
         // confirm a Process is passed
         if (Process is null)
@@ -103,7 +103,7 @@ public class ProcessService : IProcessService
             throw new ArgumentNullException(nameof(Process));
         }
         // confirm that the Process exists in the Database
-        Process? ProcessFromDatabase = Get(id);
+        ProcessEntity? ProcessFromDatabase = Get(id);
         if (ProcessFromDatabase is null)
         {
             return false;
@@ -119,7 +119,7 @@ public class ProcessService : IProcessService
     /// Removes an existing Process from the Database.
     /// </summary>
     /// <param name="Entity"></param>
-    public void Delete(Process Entity)
+    public void Delete(ProcessEntity Entity)
     {
         _context.Processes.Remove(Entity);
         _context.Entry(Entity).State = EntityState.Deleted;

@@ -33,8 +33,8 @@ public class PrintController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<PrintDto>> GetAll()
     {
-        IEnumerable<Print> PrintsFromDatabase = _printService.GetAll();
-        // convert each of the Print entities into a Dto
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetAll();
+        // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
             .Select(PrintMapper.EntityToDto);
         return Ok(Dtos);
@@ -46,7 +46,7 @@ public class PrintController : ControllerBase
     /// <param name="date"></param>
     /// <returns></returns>
     [HttpGet("onDate")]
-    public ActionResult<IEnumerable<Print>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
+    public ActionResult<IEnumerable<PrintEntity>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
     {
         // parse the date to a DateTime object
         string Date = $"{month}/{day}/{year}";
@@ -55,8 +55,8 @@ public class PrintController : ControllerBase
         {
             return BadRequest();
         }
-        IEnumerable<Print> PrintsFromDatabase = _printService.GetOnDate(ParsedDate);
-        // convert each of the Print entities into a Dto
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDate(ParsedDate);
+        // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
             .Select(PrintMapper.EntityToDto);
         return Ok(Dtos);
@@ -68,7 +68,7 @@ public class PrintController : ControllerBase
     /// <param name="date"></param>
     /// <returns></returns>
     [HttpGet("onDateBy")]
-    public ActionResult<IEnumerable<Print>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
+    public ActionResult<IEnumerable<PrintEntity>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
     {
         // parse the date to a DateTime object
         string Date = $"{month}/{day}/{year}";
@@ -77,8 +77,8 @@ public class PrintController : ControllerBase
         {
             return BadRequest();
         }
-        IEnumerable<Print> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
-        // convert each of the Print entities into a Dto
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
+        // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
             .Select(PrintMapper.EntityToDto);
         return Ok(Dtos);
@@ -92,7 +92,7 @@ public class PrintController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<PrintDto> Get(int id)
     {
-        Print? PrintFromDatabase = _printService.Get(id);
+        PrintEntity? PrintFromDatabase = _printService.Get(id);
         if (PrintFromDatabase is null)
         {
             return NotFound();
@@ -108,7 +108,7 @@ public class PrintController : ControllerBase
     public ActionResult<PrintDto> Create([FromBody] PrintDao Dao)
     {
         // map the new Print (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        Print Entity = PrintMapper.DaoToEntity(Dao);
+        PrintEntity Entity = PrintMapper.DaoToEntity(Dao);
         Entity = _printService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         PrintDto PrintToReturn = PrintMapper.EntityToDto(Entity);
@@ -156,7 +156,7 @@ public class PrintController : ControllerBase
         {
             return BadRequest();
         }
-        Print? PrintFromDatabase = _printService.Get(id);
+        PrintEntity? PrintFromDatabase = _printService.Get(id);
         if (PrintFromDatabase is null)
         {
             return NotFound();

@@ -34,7 +34,7 @@ public class ScanService : IScanService
     /// Queries all of the existing Scans from the Scan database.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Scan> GetAll()
+    public IEnumerable<ScanEntity> GetAll()
     {
         return _context.Scans;
     }
@@ -45,7 +45,7 @@ public class ScanService : IScanService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Scan? Get(int id)
+    public ScanEntity? Get(int id)
     {
         // confirm that a valid id was passed
         if (id < 1)
@@ -63,7 +63,7 @@ public class ScanService : IScanService
     /// <param name="days">Must be at least 0 (non-negative).</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public IEnumerable<Scan>? GetAllWithinRange(int days)
+    public IEnumerable<ScanEntity>? GetAllWithinRange(int days)
     {
         // confirm that a valid day range was passed
         if (days < 0)
@@ -80,7 +80,7 @@ public class ScanService : IScanService
     /// <param name="Entity"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Scan Create(Scan Entity)
+    public ScanEntity Create(ScanEntity Entity)
     {
         // confirm that a Scan was passed
         if (Entity is null)
@@ -104,7 +104,7 @@ public class ScanService : IScanService
     /// <param name="id"></param>
     /// <param name="Scan"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public bool Update(int id, Scan Scan)
+    public bool Update(int id, ScanEntity Scan)
     {
         // confirm a Scan is passed
         if (Scan is null)
@@ -112,7 +112,7 @@ public class ScanService : IScanService
             throw new ArgumentNullException(nameof(Scan));
         }
         // confirm that the Scan exists in the Database
-        Scan? ScanFromDatabase = Get(id);
+        ScanEntity? ScanFromDatabase = Get(id);
         if (ScanFromDatabase is null)
         {
             return false;
@@ -128,7 +128,7 @@ public class ScanService : IScanService
     /// Removes an existing Scan from the Database.
     /// </summary>
     /// <param name="Entity"></param>
-    public void Delete(Scan Entity)
+    public void Delete(ScanEntity Entity)
     {
         _context.Scans.Remove(Entity);
         _context.Entry(Entity).State = EntityState.Deleted;

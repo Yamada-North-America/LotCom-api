@@ -34,7 +34,7 @@ public class PrintService : IPrintService
     /// Queries all of the existing Prints from the Print Database.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Print> GetAll()
+    public IEnumerable<PrintEntity> GetAll()
     {
         return _context.Prints;
     }
@@ -44,7 +44,7 @@ public class PrintService : IPrintService
     /// </summary>
     /// <param name="Date"></param>
     /// <returns></returns>
-    public IEnumerable<Print> GetOnDate(DateTime Date)
+    public IEnumerable<PrintEntity> GetOnDate(DateTime Date)
     {
         string QueryDate = new LotCom.Types.Timestamp(Date).Stamp.Split("-")[0];
         return _context.Prints
@@ -57,7 +57,7 @@ public class PrintService : IPrintService
     /// <param name="Date"></param>
     /// <param name="Process"></param>
     /// <returns></returns>
-    public IEnumerable<Print> GetOnDateByProcess(DateTime Date, int ProcessId)
+    public IEnumerable<PrintEntity> GetOnDateByProcess(DateTime Date, int ProcessId)
     {
         return GetOnDate(Date)
             .Where(x => x.ProcessId.Equals(ProcessId));
@@ -69,7 +69,7 @@ public class PrintService : IPrintService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Print? Get(int id)
+    public PrintEntity? Get(int id)
     {
         // confirm that a valid id was passed
         if (id < 0)
@@ -86,7 +86,7 @@ public class PrintService : IPrintService
     /// </summary>
     /// <param name="Print"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public Print Create(Print Print)
+    public PrintEntity Create(PrintEntity Print)
     {
         // confirm a Print is passed
         if (Print is null)
@@ -110,7 +110,7 @@ public class PrintService : IPrintService
     /// <param name="id"></param>
     /// <param name="Print"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public bool Update(int id, Print Print)
+    public bool Update(int id, PrintEntity Print)
     {
         // confirm a Print is passed
         if (Print is null)
@@ -118,7 +118,7 @@ public class PrintService : IPrintService
             throw new ArgumentNullException(nameof(Print));
         }
         // confirm that the Print exists in the Database
-        Print? PrintFromDatabase = Get(id);
+        PrintEntity? PrintFromDatabase = Get(id);
         if (PrintFromDatabase is null)
         {
             return false;
@@ -134,7 +134,7 @@ public class PrintService : IPrintService
     /// Removes an existing Print from the Database.
     /// </summary>
     /// <param name="Print"></param>
-    public void Delete(Print Print)
+    public void Delete(PrintEntity Print)
     {
         // remove the Print from the DbSet and set its state
         _context.Prints.Remove(Print);

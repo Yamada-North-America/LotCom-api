@@ -7,13 +7,13 @@ namespace LotComAPI.Mappers;
 public static class ProcessMapper
 {
     /// <summary>
-    /// Performs mapping of values from Models.ProcessDto to Entities.Process.
+    /// Performs mapping of values from Models.ProcessDto to Entities.ProcessEntity.
     /// </summary>
     /// <param name="Dto"></param>
     /// <returns></returns>
-    public static Process DtoToEntity(ProcessDto Dto)
+    public static ProcessEntity DtoToEntity(ProcessDto Dto)
     {
-        Process Entity = new Process
+        ProcessEntity Entity = new ProcessEntity
         (
             Dto.LineCode,
             Dto.LineName,
@@ -37,11 +37,11 @@ public static class ProcessMapper
     }
 
     /// <summary>
-    /// Performs mapping of values from Entities.Process to Models.ProcessDto.
+    /// Performs mapping of values from Entities.ProcessEntity to Models.ProcessDto.
     /// </summary>
     /// <param name="Entity"></param>
     /// <returns></returns>
-    public static ProcessDto EntityToDto(Process Entity)
+    public static ProcessDto EntityToDto(ProcessEntity Entity)
     {
         ProcessDto Dto = new ProcessDto
         (
@@ -72,7 +72,7 @@ public static class ProcessMapper
     /// <param name="Original"></param>
     /// <param name="New"></param>
     /// <returns></returns>
-    public static void EntityToEntity(Process Original, Process New)
+    public static void EntityToEntity(ProcessEntity Original, ProcessEntity New)
     {
         Original.LineCode = New.LineCode;
         Original.LineName = New.LineName;
@@ -93,13 +93,13 @@ public static class ProcessMapper
     }
 
     /// <summary>
-    /// Maps values from a Data Access Object (DAO) to an Entities.Process object.
+    /// Maps values from a Data Access Object (DAO) to an Entities.ProcessEntity object.
     /// </summary>
     /// <param name="Dao"></param>
     /// <returns></returns>
-    public static Process DaoToEntity(ProcessDao Dao)
+    public static ProcessEntity DaoToEntity(ProcessDao Dao)
     {
-        return new Process
+        return new ProcessEntity
         (
             Dao.LineCode,
             Dao.LineName,

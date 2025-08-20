@@ -33,8 +33,8 @@ public class ScanController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ScanDto>> GetAll()
     {
-        IEnumerable<Scan> ScansFromDatabase = _scanService.GetAll();
-        // convert each of the Scan entities into a Dto
+        IEnumerable<ScanEntity> ScansFromDatabase = _scanService.GetAll();
+        // convert each of the ScanEntity entities into a Dto
         IEnumerable<ScanDto> Dtos = ScansFromDatabase
             .Select(ScanMapper.EntityToDto);
         return Ok(Dtos);
@@ -47,12 +47,12 @@ public class ScanController : ControllerBase
     [HttpGet("within")]
     public ActionResult<IEnumerable<ScanDto>> GetAllWithinRange([FromQuery] int days)
     {
-        IEnumerable<Scan>? ScansFromDatabase = _scanService.GetAllWithinRange(days);
+        IEnumerable<ScanEntity>? ScansFromDatabase = _scanService.GetAllWithinRange(days);
         if (ScansFromDatabase is null)
         {
             return BadRequest();
         }
-        // convert each of the Scan entities into a Dto
+        // convert each of the ScanEntity entities into a Dto
         IEnumerable<ScanDto> Dtos = ScansFromDatabase
             .Select(ScanMapper.EntityToDto);
         return Ok(Dtos);
@@ -66,7 +66,7 @@ public class ScanController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ScanDto> Get(int id)
     {
-        Scan? ScanFromDatabase = _scanService.Get(id);
+        ScanEntity? ScanFromDatabase = _scanService.Get(id);
         if (ScanFromDatabase is null)
         {
             return NotFound();
@@ -82,7 +82,7 @@ public class ScanController : ControllerBase
     public ActionResult<ScanDto> Create([FromBody] ScanDao Dao)
     {
         // map the new Scan (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        Scan Entity = ScanMapper.DaoToEntity(Dao);
+        ScanEntity Entity = ScanMapper.DaoToEntity(Dao);
         Entity = _scanService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
         ScanDto ScanToReturn = ScanMapper.EntityToDto(Entity);
@@ -131,7 +131,7 @@ public class ScanController : ControllerBase
         {
             return BadRequest();
         }
-        Scan? ScanFromDatabase = _scanService.Get(id);
+        ScanEntity? ScanFromDatabase = _scanService.Get(id);
         if (ScanFromDatabase is null)
         {
             return NotFound();
