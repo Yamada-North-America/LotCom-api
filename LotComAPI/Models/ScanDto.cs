@@ -3,15 +3,17 @@ namespace LotComAPI.Models;
 /// <summary>
 /// Defines the publicly-available entity structure of a Scan.
 /// </summary>
-public class ScanDto(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
+public class ScanDto(int ScanProcessId, string ScanDate, string ScanAddress, int LabelProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, string? DieNumber, int? DeburrJBKNumber, string? HeatNumber, string ProductionDate)
 {
     public int Id { get; set; } = 0;
 
-    public string Date { get; set; } = Date;
+    public int ScanProcessId { get; set; } = ScanProcessId;
 
-    public string Address { get; set; } = Address;
+    public string ScanDate { get; set; } = ScanDate;
 
-    public int ProcessId { get; set; } = ProcessId;
+    public string ScanAddress { get; set; } = ScanAddress;
+
+    public int LabelProcessId { get; set; } = LabelProcessId;
 
     public int PartId { get; set; } = PartId;
 
