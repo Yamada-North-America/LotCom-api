@@ -15,9 +15,10 @@ public static class ScanMapper
     {
         Scan Entity = new Scan
         (
-            Dto.Date,
-            Dto.Address,
-            Dto.ProcessId,
+            Dto.ScanProcessId,
+            Dto.ScanDate,
+            Dto.ScanAddress,
+            Dto.LabelProcessId,
             Dto.PartId,
             Dto.Quantity,
             Dto.SecondaryQuantity,
@@ -48,9 +49,10 @@ public static class ScanMapper
     {
         ScanDto Dto = new ScanDto
         (
-            Entity.Date,
-            Entity.Address,
-            Entity.ProcessId,
+            Entity.ScanProcessId,
+            Entity.ScanDate,
+            Entity.ScanAddress,
+            Entity.LabelProcessId,
             Entity.PartId,
             Entity.Quantity,
             Entity.SecondaryQuantity,
@@ -80,9 +82,10 @@ public static class ScanMapper
     /// <returns></returns>
     public static void EntityToEntity(Scan Original, Scan New)
     {
-        Original.Date = New.Date;
-        Original.Address = New.Address;
-        Original.ProcessId = New.ProcessId;
+        Original.ScanProcessId = New.ScanProcessId;
+        Original.ScanDate = New.ScanDate;
+        Original.ScanAddress = New.ScanAddress;
+        Original.LabelProcessId = New.LabelProcessId;
         Original.PartId = New.PartId;
         Original.Quantity = New.Quantity;
         Original.SecondaryQuantity = New.SecondaryQuantity;
@@ -110,9 +113,12 @@ public static class ScanMapper
     {
         return new Scan
         (
-            Dao.Date,
-            Dao.Address,
-            Dao.ProcessId,
+            Dao.ScanProcessId,
+            Dao.ScanDate
+                .Replace("%2F", "/")
+                .Replace("%3A", ":"),
+            Dao.ScanAddress,
+            Dao.LabelProcessId,
             Dao.PartId,
             Dao.Quantity,
             Dao.SecondaryQuantity,
