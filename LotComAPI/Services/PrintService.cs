@@ -138,7 +138,7 @@ public class PrintService : IPrintService
             return false;
         }
         // update the entry in context
-        PrintFromDatabase = _printMapper.EntityToEntity(Print);
+        _printMapper.UpdateEntity(PrintFromDatabase, Print);
         PrintFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
         _printContext.Entry(PrintFromDatabase).State = EntityState.Modified;
         return true;

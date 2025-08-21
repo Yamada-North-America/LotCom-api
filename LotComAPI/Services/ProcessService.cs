@@ -123,7 +123,7 @@ public class ProcessService : IProcessService
             return false;
         }
         // update the entry in context
-        ProcessFromDatabase = _processMapper.EntityToEntity(Process);
+        _processMapper.UpdateEntity(ProcessFromDatabase, Process);
         ProcessFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
         _processContext.Entry(ProcessFromDatabase).State = EntityState.Modified;
         return true;

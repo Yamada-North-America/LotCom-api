@@ -135,7 +135,7 @@ public class PartService : IPartService
             return false;
         }
         // update the entry in context
-        PartFromDatabase = _partMapper.EntityToEntity(Part);
+        _partMapper.UpdateEntity(PartFromDatabase, Part);
         PartFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
         _partContext.Entry(PartFromDatabase).State = EntityState.Modified;
         return true;

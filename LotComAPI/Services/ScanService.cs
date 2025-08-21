@@ -132,7 +132,7 @@ public class ScanService : IScanService
             return false;
         }
         // update the entry in context
-        ScanFromDatabase = _scanMapper.EntityToEntity(Scan);
+        _scanMapper.UpdateEntity(ScanFromDatabase, Scan);
         ScanFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
         _scanContext.Entry(ScanFromDatabase).State = EntityState.Modified;
         return true;
