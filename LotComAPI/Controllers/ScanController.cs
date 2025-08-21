@@ -1,9 +1,9 @@
 using LotCom.DataAccess.Models;
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
-using LotComAPI.Models;
+using LotCom.DataAccess.Entities;
 using LotComAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using LotCom.DataAccess.Mappers;
+using LotCom.Types;
 
 namespace LotComAPI.Controllers;
 
@@ -16,7 +16,9 @@ public class ScanController : ControllerBase
 {
     private readonly IScanService _scanService;
 
-    public ScanController(IScanService ScanService)
+    private readonly IMapper<Scan, ScanEntity, ScanDto> _scanMapper;
+
+    public ScanController(IScanService ScanService, IMapper<Scan, ScanEntity, ScanDto> ScanMapper)
     {
         // confirm a ScanService was injected
         if (ScanService is null)
@@ -24,6 +26,12 @@ public class ScanController : ControllerBase
             throw new ArgumentNullException(nameof(ScanService));
         }
         _scanService = ScanService;
+        // confirm a ScanMapper was injected
+        if (ScanMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ScanMapper));
+        }
+        _scanMapper = ScanMapper;
     }
 
     /// <summary>
@@ -36,7 +44,7 @@ public class ScanController : ControllerBase
         IEnumerable<ScanEntity> ScansFromDatabase = _scanService.GetAll();
         // convert each of the ScanEntity entities into a Dto
         IEnumerable<ScanDto> Dtos = ScansFromDatabase
-            .Select(ScanMapper.EntityToDto);
+            .Select(_scanMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -54,7 +62,7 @@ public class ScanController : ControllerBase
         }
         // convert each of the ScanEntity entities into a Dto
         IEnumerable<ScanDto> Dtos = ScansFromDatabase
-            .Select(ScanMapper.EntityToDto);
+            .Select(_scanMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -71,7 +79,7 @@ public class ScanController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(ScanMapper.EntityToDto(ScanFromDatabase));
+        return Ok(_scanMapper.EntityToDto(ScanFromDatabase));
     }
 
     /// <summary>
@@ -79,13 +87,13 @@ public class ScanController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ScanDto> Create([FromBody] ScanDao Dao)
+    public ActionResult<ScanDto> Create([FromBody] ScanDto Dto)
     {
-        // map the new Scan (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        ScanEntity Entity = ScanMapper.DaoToEntity(Dao);
+        // map the new Scan (as a Dto from the Data Access Layer) to an entity and add it to the Db
+        ScanEntity Entity = _scanMapper.DtoToEntity(Dto);
         Entity = _scanService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
-        ScanDto ScanToReturn = ScanMapper.EntityToDto(Entity);
+        ScanDto ScanToReturn = _scanMapper.EntityToDto(Entity);
         // send a CreatedAtRoute response with a 201 status code
         return new CreatedAtActionResult
         (
@@ -101,15 +109,15 @@ public class ScanController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] ScanDao Dao)
+    public IActionResult Update(int id, [FromBody] ScanDto Dto)
     {
         // confirm an id was passed
-        if (Dao is null || id != Dao.Id)
+        if (Dto is null || id != Dto.Id)
         {
             return BadRequest();
         }
         // update the Entity with the service
-        bool Result = _scanService.Update(id, ScanMapper.DaoToEntity(Dao));
+        bool Result = _scanService.Update(id, _scanMapper.DtoToEntity(Dto));
         if (!Result)
         {
             return NotFound();

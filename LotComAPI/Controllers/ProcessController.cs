@@ -1,9 +1,9 @@
 using LotCom.DataAccess.Models;
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
-using LotComAPI.Models;
+using LotCom.DataAccess.Entities;
 using LotComAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using LotCom.DataAccess.Mappers;
+using LotCom.Types;
 
 namespace LotComAPI.Controllers;
 
@@ -14,16 +14,24 @@ namespace LotComAPI.Controllers;
 [Route("[controller]")]
 public class ProcessController : ControllerBase
 {
-    private IProcessService _processService;
+    private readonly IProcessService _processService;
 
-    public ProcessController(IProcessService Service)
+    private readonly IMapper<Process, ProcessEntity, ProcessDto> _processMapper;
+
+    public ProcessController(IProcessService ProcessService, IMapper<Process, ProcessEntity, ProcessDto> ProcessMapper)
     {
-        // confirm that the ProcessService was injected
-        if (Service is null)
+        // confirm a ProcessService was injected
+        if (ProcessService is null)
         {
-            throw new ArgumentNullException(nameof(Service));
+            throw new ArgumentNullException(nameof(ProcessService));
         }
-        _processService = Service;
+        _processService = ProcessService;
+        // confirm a ProcessMapper was injected
+        if (ProcessMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ProcessMapper));
+        }
+        _processMapper = ProcessMapper;
     }
 
     /// <summary>
@@ -35,7 +43,7 @@ public class ProcessController : ControllerBase
     {
         IEnumerable<ProcessEntity> ProcessesFromDatabase = _processService.GetAllFromStoredProcedure();
         return Ok(ProcessesFromDatabase
-            .Select(ProcessMapper.EntityToDto));
+            .Select(_processMapper.EntityToDto));
     }
 
     /// <summary>
@@ -51,7 +59,7 @@ public class ProcessController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(ProcessMapper.EntityToDto(ProcessFromDatabase));
+        return Ok(_processMapper.EntityToDto(ProcessFromDatabase));
     }
 
     /// <summary>
@@ -59,11 +67,11 @@ public class ProcessController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ProcessDto> Create([FromBody] ProcessDao Dao)
+    public ActionResult<ProcessDto> Create([FromBody] ProcessDto Dto)
     {
-        ProcessEntity Entity = ProcessMapper.DaoToEntity(Dao);
+        ProcessEntity Entity = _processMapper.DtoToEntity(Dto);
         Entity = _processService.Create(Entity);
-        ProcessDto DtoToReturn = ProcessMapper.EntityToDto(Entity);
+        ProcessDto DtoToReturn = _processMapper.EntityToDto(Entity);
         return new CreatedAtActionResult
         (
             nameof(Get),
@@ -78,15 +86,15 @@ public class ProcessController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] ProcessDao Dao)
+    public IActionResult Update(int id, [FromBody] ProcessDto Dto)
     {
         // confirm an id was passed
-        if (Dao is null || id != Dao.Id)
+        if (Dto is null || id != Dto.Id)
         {
             return BadRequest();
         }
         // update the Entity with the service
-        bool Result = _processService.Update(id, ProcessMapper.DaoToEntity(Dao));
+        bool Result = _processService.Update(id, _processMapper.DtoToEntity(Dto));
         if (!Result)
         {
             return NotFound();

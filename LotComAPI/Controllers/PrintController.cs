@@ -1,9 +1,9 @@
 using LotComAPI.Services;
-using LotComAPI.Entities;
+using LotCom.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
-using LotComAPI.Models;
-using LotComAPI.Mappers;
 using LotCom.DataAccess.Models;
+using LotCom.DataAccess.Mappers;
+using LotCom.Types;
 
 namespace LotComAPI.Controllers;
 
@@ -16,7 +16,9 @@ public class PrintController : ControllerBase
 {
     private readonly IPrintService _printService;
 
-    public PrintController(IPrintService PrintService)
+    private readonly IMapper<Print, PrintEntity, PrintDto> _printMapper;
+
+    public PrintController(IPrintService PrintService, IMapper<Print, PrintEntity, PrintDto> PrintMapper)
     {
         // confirm a PrintService was injected
         if (PrintService is null)
@@ -24,6 +26,12 @@ public class PrintController : ControllerBase
             throw new ArgumentNullException(nameof(PrintService));
         }
         _printService = PrintService;
+        // confirm a PrintMapper was injected
+        if (PrintMapper is null)
+        {
+            throw new ArgumentNullException(nameof(PrintMapper));
+        }
+        _printMapper = PrintMapper;
     }
 
     /// <summary>
@@ -36,7 +44,7 @@ public class PrintController : ControllerBase
         IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetAll();
         // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
-            .Select(PrintMapper.EntityToDto);
+            .Select(_printMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -58,7 +66,7 @@ public class PrintController : ControllerBase
         IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDate(ParsedDate);
         // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
-            .Select(PrintMapper.EntityToDto);
+            .Select(_printMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -80,7 +88,7 @@ public class PrintController : ControllerBase
         IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
         // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
-            .Select(PrintMapper.EntityToDto);
+            .Select(_printMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -97,7 +105,7 @@ public class PrintController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(PrintMapper.EntityToDto(PrintFromDatabase));
+        return Ok(_printMapper.EntityToDto(PrintFromDatabase));
     }
 
     /// <summary>
@@ -105,13 +113,13 @@ public class PrintController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PrintDto> Create([FromBody] PrintDao Dao)
+    public ActionResult<PrintDto> Create([FromBody] PrintDto Dto)
     {
-        // map the new Print (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        PrintEntity Entity = PrintMapper.DaoToEntity(Dao);
+        // map the new Print (as a Dto from the Data Access Layer) to an entity and add it to the Db
+        PrintEntity Entity = _printMapper.DtoToEntity(Dto);
         Entity = _printService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
-        PrintDto PrintToReturn = PrintMapper.EntityToDto(Entity);
+        PrintDto PrintToReturn = _printMapper.EntityToDto(Entity);
         // send a CreatedAtRoute response with a 201 status code
         return new CreatedAtActionResult
         (
@@ -127,15 +135,15 @@ public class PrintController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] PrintDao Dao)
+    public IActionResult Update(int id, [FromBody] PrintDto Dto)
     {
         // confirm an id was passed
-        if (Dao is null || id != Dao.Id)
+        if (Dto is null || id != Dto.Id)
         {
             return BadRequest();
         }
         // update the Entity with the service
-        bool Result = _printService.Update(id, PrintMapper.DaoToEntity(Dao));
+        bool Result = _printService.Update(id, _printMapper.DtoToEntity(Dto));
         if (!Result)
         {
             return NotFound();

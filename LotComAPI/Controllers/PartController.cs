@@ -1,9 +1,9 @@
 using LotCom.DataAccess.Models;
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
-using LotComAPI.Models;
+using LotCom.DataAccess.Entities;
+using LotCom.DataAccess.Mappers;
 using LotComAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using LotCom.Types;
 
 namespace LotComAPI.Controllers;
 
@@ -15,8 +15,10 @@ namespace LotComAPI.Controllers;
 public class PartController : ControllerBase
 {
     private readonly IPartService _partService;
+    
+    private readonly IMapper<Part, PartEntity, PartDto> _partMapper;
 
-    public PartController(IPartService PartService)
+    public PartController(IPartService PartService, IMapper<Part, PartEntity, PartDto> PartMapper)
     {
         // confirm a PartService was injected
         if (PartService is null)
@@ -24,6 +26,12 @@ public class PartController : ControllerBase
             throw new ArgumentNullException(nameof(PartService));
         }
         _partService = PartService;
+        // confirm a PartMapper was injected
+        if (PartMapper is null)
+        {
+            throw new ArgumentNullException(nameof(PartMapper));
+        }
+        _partMapper = PartMapper;
     }
 
     /// <summary>
@@ -36,7 +44,7 @@ public class PartController : ControllerBase
         IEnumerable<PartEntity> PartsFromDatabase = _partService.GetAll();
         // convert each of the Print entities into a Dto
         IEnumerable<PartDto> Dtos = PartsFromDatabase
-            .Select(PartMapper.EntityToDto);
+            .Select(_partMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -51,7 +59,7 @@ public class PartController : ControllerBase
         IEnumerable<PartEntity> PartsFromDatabase = _partService.GetPrintedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
-            .Select(PartMapper.EntityToDto);
+            .Select(_partMapper.EntityToDto);
         return Ok(Dtos);
     }
     
@@ -66,7 +74,7 @@ public class PartController : ControllerBase
         IEnumerable<PartEntity> PartsFromDatabase = _partService.GetScannedBy(processId);
         // convert each entity from Parts to Dtos
         IEnumerable<PartDto> Dtos = PartsFromDatabase
-            .Select(PartMapper.EntityToDto);
+            .Select(_partMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -83,7 +91,7 @@ public class PartController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(PartMapper.EntityToDto(PartFromDatabase));
+        return Ok(_partMapper.EntityToDto(PartFromDatabase));
     }
 
     /// <summary>
@@ -92,13 +100,13 @@ public class PartController : ControllerBase
     /// <param name="Part">The Part object that will be POSTed to the database.</param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PartDto> Create([FromBody] PartDao Dao)
+    public ActionResult<PartDto> Create([FromBody] PartDto Dto)
     {
-        // map the new Part (as a DAO from the Data Access Layer) to an entity and add it to the Db
-        PartEntity Entity = PartMapper.DaoToEntity(Dao);
+        // map the new Part (as a Dto from the Data Access Layer) to an entity and add it to the Db
+        PartEntity Entity = _partMapper.DtoToEntity(Dto);
         Entity = _partService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
-        PartDto PartToReturn = PartMapper.EntityToDto(Entity);
+        PartDto PartToReturn = _partMapper.EntityToDto(Entity);
         // send a CreatedAtRoute response with a 201 status code
         return new CreatedAtActionResult
         (
@@ -114,15 +122,15 @@ public class PartController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] PartDao Dao)
+    public IActionResult Update(int id, [FromBody] PartDto Dto)
     {
         // confirm an id was passed
-        if (Dao is null || id != Dao.Id)
+        if (Dto is null || id != Dto.Id)
         {
             return BadRequest();
         }
         // update the Entity with the service
-        bool Result = _partService.Update(id, PartMapper.DaoToEntity(Dao));
+        bool Result = _partService.Update(id, _partMapper.DtoToEntity(Dto));
         if (!Result)
         {
             return NotFound();
