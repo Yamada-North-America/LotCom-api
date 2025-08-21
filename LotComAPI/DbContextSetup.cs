@@ -1,3 +1,7 @@
+using LotCom.DataAccess.Entities;
+using LotCom.DataAccess.Mappers;
+using LotCom.DataAccess.Models;
+using LotCom.Types;
 using LotComAPI.DbContexts;
 using LotComAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +19,7 @@ public static class DbContextSetup
     {
         // add the Services and DbContexts as app services
         builder.Services.AddScoped<IPrintService, PrintService>();
+        builder.Services.AddScoped<IMapper<Print, PrintEntity, PrintDto>, PrintMapper>();
         builder.Services.AddDbContext<PrintContext>
         (
             options =>
@@ -26,6 +31,7 @@ public static class DbContextSetup
             }
         );
         builder.Services.AddScoped<IScanService, ScanService>();
+        builder.Services.AddScoped<IMapper<Scan, ScanEntity, ScanDto>, ScanMapper>();
         builder.Services.AddDbContext<ScanContext>
         (
             options =>
@@ -37,6 +43,7 @@ public static class DbContextSetup
             }
         );
         builder.Services.AddScoped<IProcessService, ProcessService>();
+        builder.Services.AddScoped<IMapper<Process, ProcessEntity, ProcessDto>, ProcessMapper>();
         builder.Services.AddDbContext<ProcessContext>
         (
             options =>
@@ -48,6 +55,7 @@ public static class DbContextSetup
             }
         );
         builder.Services.AddScoped<IPartService, PartService>();
+        builder.Services.AddScoped<IMapper<Part, PartEntity, PartDto>, PartMapper>();
         builder.Services.AddDbContext<PartContext>
         (
             options =>
