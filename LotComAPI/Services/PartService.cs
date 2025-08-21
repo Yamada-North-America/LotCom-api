@@ -1,7 +1,9 @@
-using LotComAPI.Entities;
+using LotCom.DataAccess.Entities;
+using LotCom.DataAccess.Mappers;
+using LotCom.DataAccess.Models;
+using LotCom.Types;
 using LotComAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
-using LotComAPI.Mappers;
 
 namespace LotComAPI.Services;
 
@@ -13,21 +15,33 @@ public class PartService : IPartService
     /// <summary>
     /// A context ("Session") that allows manipulation of the Part Database.
     /// </summary>
-    private readonly PartContext _context;
+    private readonly PartContext _partContext;
+
+    /// <summary>
+    /// A mapper that allows translation between Part classes.
+    /// </summary>
+    private readonly IMapper<Part, PartEntity, PartDto> _partMapper;
 
     /// <summary>
     /// Creates a new Service that enables RESTful operations on the Part Database.
     /// </summary>
-    /// <param name="Context"></param>
+    /// <param name="PartContext"></param>
+    /// <param name="PartMapper"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public PartService(PartContext Context)
+    public PartService(PartContext PartContext, IMapper<Part, PartEntity, PartDto> PartMapper)
     {
-        // confirm that the context passed to the service exists
-        if (Context is null)
+        // confirm that a PartContext was injected
+        if (PartContext is null)
         {
-            throw new ArgumentNullException(nameof(Context));
+            throw new ArgumentNullException(nameof(PartContext));
         }
-        _context = Context;
+        _partContext = PartContext;
+        // confirm that a PartMapper was injected
+        if (PartMapper is null)
+        {
+            throw new ArgumentNullException(nameof(PartMapper));
+        }
+        _partMapper = PartMapper;
     }
 
     /// <summary>
@@ -36,7 +50,7 @@ public class PartService : IPartService
     /// <returns></returns>
     public IEnumerable<PartEntity> GetAll()
     {
-        return _context.Parts;
+        return _partContext.Parts;
     }
 
     /// <summary>
@@ -46,7 +60,7 @@ public class PartService : IPartService
     /// <returns></returns>
     public IEnumerable<PartEntity> GetPrintedBy(int ProcessId)
     {
-        return _context.Parts
+        return _partContext.Parts
             .Where(x => x.PrintedBy.Equals(ProcessId));
     }
 
@@ -57,7 +71,7 @@ public class PartService : IPartService
     /// <returns></returns>
     public IEnumerable<PartEntity> GetScannedBy(int ProcessId)
     {
-        return _context.Parts
+        return _partContext.Parts
             .Where(x => x.ScannedBy.Equals(ProcessId));
     }
 
@@ -74,7 +88,7 @@ public class PartService : IPartService
         {
             throw new ArgumentNullException(nameof(id));
         }
-        return _context.Parts
+        return _partContext.Parts
                 .Where(x => x.Id.Equals(id))
                 .FirstOrDefault();
     }
@@ -94,11 +108,11 @@ public class PartService : IPartService
         Part.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
         Part.Updated = Part.Created;
         // add the Part to the DbSet and set its state
-        _context.Parts.Add(Part);
-        _context.Entry(Part).State = EntityState.Added;
+        _partContext.Parts.Add(Part);
+        _partContext.Entry(Part).State = EntityState.Added;
         // save the DbContext and return the newly added entity
         Save();
-        return _context.Entry(Part).Entity;
+        return _partContext.Entry(Part).Entity;
     }
 
     /// <summary>
@@ -121,9 +135,9 @@ public class PartService : IPartService
             return false;
         }
         // update the entry in context
-        PartMapper.EntityToEntity(PartFromDatabase, Part);
-        PartFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
-        _context.Entry(PartFromDatabase).State = EntityState.Modified;
+        PartFromDatabase = _partMapper.EntityToEntity(Part);
+        PartFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
+        _partContext.Entry(PartFromDatabase).State = EntityState.Modified;
         return true;
     }
 
@@ -134,8 +148,8 @@ public class PartService : IPartService
     public void Delete(PartEntity Part)
     {
         // remove the Part from the DbSet and set its state
-        _context.Parts.Remove(Part);
-        _context.Entry(Part).State = EntityState.Deleted;
+        _partContext.Parts.Remove(Part);
+        _partContext.Entry(Part).State = EntityState.Deleted;
     }
 
 
@@ -145,6 +159,6 @@ public class PartService : IPartService
     /// <returns></returns>
     public bool Save()
     {
-        return _context.SaveChanges() >= 0;
+        return _partContext.SaveChanges() >= 0;
     }
 }

@@ -1,7 +1,9 @@
-using LotComAPI.Mappers;
 using LotComAPI.DbContexts;
-using LotComAPI.Entities;
+using LotCom.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using LotCom.DataAccess.Mappers;
+using LotCom.Types;
+using LotCom.DataAccess.Models;
 
 namespace LotComAPI.Services;
 
@@ -13,21 +15,33 @@ public class PrintService : IPrintService
     /// <summary>
     /// A context ("Session") that allows manipulation of the Print Database.
     /// </summary>
-    private readonly PrintContext _context;
+    private readonly PrintContext _printContext;
+
+    /// <summary>
+    /// A mapper that allows translation between Print classes.
+    /// </summary>
+    private readonly IMapper<Print, PrintEntity, PrintDto> _printMapper;
 
     /// <summary>
     /// Creates a new Service that enables RESTful operations on the Print Database.
     /// </summary>
-    /// <param name="Context"></param>
+    /// <param name="PrintContext"></param>
+    /// <param name="PrintMapper"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public PrintService(PrintContext Context)
+    public PrintService(PrintContext PrintContext, IMapper<Print, PrintEntity, PrintDto> PrintMapper)
     {
-        // confirm that the context passed to the service exists
-        if (Context is null)
+        // confirm that a PrintContext was injected
+        if (PrintContext is null)
         {
-            throw new ArgumentNullException(nameof(Context));
+            throw new ArgumentNullException(nameof(PrintContext));
         }
-        _context = Context;
+        _printContext = PrintContext;
+        // confirm that a PrintMapper was injected
+        if (PrintMapper is null)
+        {
+            throw new ArgumentNullException(nameof(PrintMapper));
+        }
+        _printMapper = PrintMapper;
     }
 
     /// <summary>
@@ -36,7 +50,7 @@ public class PrintService : IPrintService
     /// <returns></returns>
     public IEnumerable<PrintEntity> GetAll()
     {
-        return _context.Prints;
+        return _printContext.Prints;
     }
 
     /// <summary>
@@ -47,7 +61,7 @@ public class PrintService : IPrintService
     public IEnumerable<PrintEntity> GetOnDate(DateTime Date)
     {
         string QueryDate = new LotCom.Types.Timestamp(Date).Stamp.Split("-")[0];
-        return _context.Prints
+        return _printContext.Prints
             .Where(x => x.ProductionDate.Contains(QueryDate));
     }
 
@@ -76,7 +90,7 @@ public class PrintService : IPrintService
         {
             throw new ArgumentNullException(nameof(id));
         }
-        return _context.Prints
+        return _printContext.Prints
             .Where(x => x.Id.Equals(id))
             .FirstOrDefault();
     }
@@ -97,11 +111,11 @@ public class PrintService : IPrintService
         Print.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
         Print.Updated = Print.Created;
         // add the Print to the DbSet and set its state
-        _context.Prints.Add(Print);
-        _context.Entry(Print).State = EntityState.Added;
+        _printContext.Prints.Add(Print);
+        _printContext.Entry(Print).State = EntityState.Added;
         // save the DbContext and return the newly added entity
         Save();
-        return _context.Entry(Print).Entity;
+        return _printContext.Entry(Print).Entity;
     }
 
     /// <summary>
@@ -124,9 +138,9 @@ public class PrintService : IPrintService
             return false;
         }
         // update the entry in context
-        PrintMapper.EntityToEntity(PrintFromDatabase, Print);
-        PrintFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
-        _context.Entry(PrintFromDatabase).State = EntityState.Modified;
+        PrintFromDatabase = _printMapper.EntityToEntity(Print);
+        PrintFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
+        _printContext.Entry(PrintFromDatabase).State = EntityState.Modified;
         return true;
     }
 
@@ -137,8 +151,8 @@ public class PrintService : IPrintService
     public void Delete(PrintEntity Print)
     {
         // remove the Print from the DbSet and set its state
-        _context.Prints.Remove(Print);
-        _context.Entry(Print).State = EntityState.Deleted;
+        _printContext.Prints.Remove(Print);
+        _printContext.Entry(Print).State = EntityState.Deleted;
     }
 
     /// <summary>
@@ -147,7 +161,7 @@ public class PrintService : IPrintService
     /// <returns></returns>
     public bool Save()
     {
-        int Result = _context.SaveChanges();
+        int Result = _printContext.SaveChanges();
         return Result >= 0;
     }
 }

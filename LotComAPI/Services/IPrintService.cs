@@ -1,4 +1,4 @@
-using LotComAPI.Entities;
+using LotCom.DataAccess.Entities;
 
 namespace LotComAPI.Services;
 

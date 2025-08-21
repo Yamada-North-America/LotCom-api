@@ -1,5 +1,5 @@
 using LotComAPI.DbContexts;
-using LotComAPI.Entities;
+using LotCom.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.Services;

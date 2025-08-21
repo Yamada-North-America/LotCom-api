@@ -1,7 +1,9 @@
 using LotComAPI.DbContexts;
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
+using LotCom.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using LotCom.DataAccess.Mappers;
+using LotCom.Types;
+using LotCom.DataAccess.Models;
 
 namespace LotComAPI.Services;
 
@@ -13,21 +15,33 @@ public class ProcessService : IProcessService
     /// <summary>
     /// A context ("Session") that allows manipulation of the Process Database.
     /// </summary>
-    private readonly ProcessContext _context;
+    private readonly ProcessContext _processContext;
+
+    /// <summary>
+    /// A mapper that allows translation between Process classes.
+    /// </summary>
+    private readonly IMapper<Process, ProcessEntity, ProcessDto> _processMapper;
 
     /// <summary>
     /// Creates a new Service that enables RESTful operations on the Process Database.
     /// </summary>
-    /// <param name="Context"></param>
+    /// <param name="ProcessContext"></param>
+    /// <param name="ProcessMapper"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public ProcessService(ProcessContext Context)
+    public ProcessService(ProcessContext ProcessContext, IMapper<Process, ProcessEntity, ProcessDto> ProcessMapper)
     {
-        // confirm that there is a context injected
-        if (Context is null)
+        // confirm that a ProcessContext was injected
+        if (ProcessContext is null)
         {
-            throw new ArgumentNullException(nameof(Context));
+            throw new ArgumentNullException(nameof(ProcessContext));
         }
-        _context = Context;
+        _processContext = ProcessContext;
+        // confirm that a ProcessMapper was injected
+        if (ProcessMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ProcessMapper));
+        }
+        _processMapper = ProcessMapper;
     }
 
     /// <summary>
@@ -36,13 +50,13 @@ public class ProcessService : IProcessService
     /// <returns></returns>
     public IEnumerable<ProcessEntity> GetAll()
     {
-        return _context.Processes;
+        return _processContext.Processes;
     }
 
 
     public IEnumerable<ProcessEntity> GetAllFromStoredProcedure()
     {
-        IEnumerable<ProcessEntity> ProcessesFromSP = _context
+        IEnumerable<ProcessEntity> ProcessesFromSP = _processContext
             .Set<ProcessEntity>()
             .FromSql($"EXEC dbo.GetAllProcesses");
         return ProcessesFromSP;
@@ -60,7 +74,7 @@ public class ProcessService : IProcessService
         {
             return null;
         }
-        return _context.Processes
+        return _processContext.Processes
             .Where(x => x.Id.Equals(id))
             .FirstOrDefault();
     }
@@ -82,11 +96,11 @@ public class ProcessService : IProcessService
         Entity.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
         Entity.Updated = Entity.Created;
         // create the new entry and save to the Db
-        _context.Processes.Add(Entity);
-        _context.Processes.Entry(Entity).State = EntityState.Added;
+        _processContext.Processes.Add(Entity);
+        _processContext.Processes.Entry(Entity).State = EntityState.Added;
         Save();
         // return the newly created entity for CreatedAtRoute
-        return _context.Entry(Entity).Entity;
+        return _processContext.Entry(Entity).Entity;
     }
 
     /// <summary>
@@ -109,9 +123,9 @@ public class ProcessService : IProcessService
             return false;
         }
         // update the entry in context
-        ProcessMapper.EntityToEntity(ProcessFromDatabase, Process);
-        ProcessFromDatabase.Updated = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
-        _context.Entry(ProcessFromDatabase).State = EntityState.Modified;
+        ProcessFromDatabase = _processMapper.EntityToEntity(Process);
+        ProcessFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
+        _processContext.Entry(ProcessFromDatabase).State = EntityState.Modified;
         return true;
     }
 
@@ -121,8 +135,8 @@ public class ProcessService : IProcessService
     /// <param name="Entity"></param>
     public void Delete(ProcessEntity Entity)
     {
-        _context.Processes.Remove(Entity);
-        _context.Entry(Entity).State = EntityState.Deleted;
+        _processContext.Processes.Remove(Entity);
+        _processContext.Entry(Entity).State = EntityState.Deleted;
     }
 
     /// <summary>
@@ -131,7 +145,7 @@ public class ProcessService : IProcessService
     /// <returns></returns>
     public bool Save()
     {
-        int Result = _context.SaveChanges();
+        int Result = _processContext.SaveChanges();
         return Result >= 0;
     }
 }
