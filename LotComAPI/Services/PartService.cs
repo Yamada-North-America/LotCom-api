@@ -1,7 +1,8 @@
-using LotCom.DataAccess.Entities;
-using LotCom.DataAccess.Mappers;
-using LotCom.DataAccess.Models;
-using LotCom.Types;
+using LotCom.Database.Entities;
+using LotCom.Database.Mappers;
+using LotCom.Database.Transfer;
+using LotCom.Core.Models;
+using LotCom.Core.Types;
 using LotComAPI.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -105,7 +106,7 @@ public class PartService : IPartService
         {
             throw new ArgumentNullException(nameof(Part));
         }
-        Part.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        Part.Created = new Timestamp(DateTime.Now).Stamp;
         Part.Updated = Part.Created;
         // add the Part to the DbSet and set its state
         _partContext.Parts.Add(Part);

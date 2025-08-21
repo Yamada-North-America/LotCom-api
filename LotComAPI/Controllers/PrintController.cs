@@ -1,9 +1,9 @@
 using LotComAPI.Services;
-using LotCom.DataAccess.Entities;
+using LotCom.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
-using LotCom.DataAccess.Models;
-using LotCom.DataAccess.Mappers;
-using LotCom.Types;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
 
 namespace LotComAPI.Controllers;
 

@@ -1,4 +1,4 @@
-using LotCom.DataAccess.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.DbContexts;

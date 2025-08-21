@@ -1,9 +1,10 @@
 using LotComAPI.DbContexts;
-using LotCom.DataAccess.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using LotCom.DataAccess.Mappers;
-using LotCom.Types;
-using LotCom.DataAccess.Models;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
+using LotCom.Core.Types;
 
 namespace LotComAPI.Services;
 
@@ -60,7 +61,7 @@ public class PrintService : IPrintService
     /// <returns></returns>
     public IEnumerable<PrintEntity> GetOnDate(DateTime Date)
     {
-        string QueryDate = new LotCom.Types.Timestamp(Date).Stamp.Split("-")[0];
+        string QueryDate = new Timestamp(Date).Stamp.Split("-")[0];
         return _printContext.Prints
             .Where(x => x.ProductionDate.Contains(QueryDate));
     }
@@ -108,7 +109,7 @@ public class PrintService : IPrintService
             throw new ArgumentNullException(nameof(Print));
         }
         // set the Print's timestamps
-        Print.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        Print.Created = new Timestamp(DateTime.Now).Stamp;
         Print.Updated = Print.Created;
         // add the Print to the DbSet and set its state
         _printContext.Prints.Add(Print);

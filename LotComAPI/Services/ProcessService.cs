@@ -1,9 +1,10 @@
 using LotComAPI.DbContexts;
-using LotCom.DataAccess.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using LotCom.DataAccess.Mappers;
-using LotCom.Types;
-using LotCom.DataAccess.Models;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
+using LotCom.Core.Types;
 
 namespace LotComAPI.Services;
 
@@ -93,7 +94,7 @@ public class ProcessService : IProcessService
             throw new ArgumentNullException(nameof(Entity));
         }
         // configure db timestamps
-        Entity.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        Entity.Created = new Timestamp(DateTime.Now).Stamp;
         Entity.Updated = Entity.Created;
         // create the new entry and save to the Db
         _processContext.Processes.Add(Entity);

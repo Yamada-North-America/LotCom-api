@@ -1,7 +1,7 @@
-using LotCom.DataAccess.Entities;
-using LotCom.DataAccess.Mappers;
-using LotCom.DataAccess.Models;
-using LotCom.Types;
+using LotCom.Core.Models;
+using LotCom.Database.Entities;
+using LotCom.Database.Mappers;
+using LotCom.Database.Transfer;
 using LotComAPI.DbContexts;
 using LotComAPI.Services;
 using Microsoft.EntityFrameworkCore;
