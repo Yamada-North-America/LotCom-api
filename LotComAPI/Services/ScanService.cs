@@ -1,6 +1,10 @@
 using LotComAPI.DbContexts;
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
+using LotCom.Core.Types;
 
 namespace LotComAPI.Services;
 
@@ -10,32 +14,44 @@ namespace LotComAPI.Services;
 public class ScanService : IScanService
 {
     /// <summary>
-    /// A context that allows manipulation of the Scan database.
+    /// A context ("Session") that allows manipulation of the Scan Database.
     /// </summary>
-    private readonly ScanContext _context;
+    private readonly ScanContext _scanContext;
 
     /// <summary>
-    /// Creates a new Service that enables RESTful operations on the Scan database.
+    /// A mapper that allows translation between Scan classes.
     /// </summary>
-    /// <param name="Context"></param>
+    private readonly IMapper<Scan, ScanEntity, ScanDto> _scanMapper;
+
+    /// <summary>
+    /// Creates a new Service that enables RESTful operations on the Scan Database.
+    /// </summary>
+    /// <param name="ScanContext"></param>
+    /// <param name="ScanMapper"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public ScanService(ScanContext Context)
+    public ScanService(ScanContext ScanContext, IMapper<Scan, ScanEntity, ScanDto> ScanMapper)
     {
-        // confirm that a context was injected
-        if (Context is null)
+        // confirm that a ScanContext was injected
+        if (ScanContext is null)
         {
-            throw new ArgumentNullException(nameof(Context));
+            throw new ArgumentNullException(nameof(ScanContext));
         }
-        _context = Context;
+        _scanContext = ScanContext;
+        // confirm that a ScanMapper was injected
+        if (ScanMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ScanMapper));
+        }
+        _scanMapper = ScanMapper;
     }
 
     /// <summary>
     /// Queries all of the existing Scans from the Scan database.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Scan> GetAll()
+    public IEnumerable<ScanEntity> GetAll()
     {
-        return _context.Scans;
+        return _scanContext.Scans;
     }
 
     /// <summary>
@@ -44,16 +60,33 @@ public class ScanService : IScanService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Scan? Get(int id)
+    public ScanEntity? Get(int id)
     {
         // confirm that a valid id was passed
         if (id < 1)
         {
             return null;
         }
-        return _context.Scans
+        return _scanContext.Scans
             .Where(x => x.Id.Equals(id))
             .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Queries all of the existing Scans that occurred within a given range (from the current date) from the Scan database.
+    /// </summary>
+    /// <param name="days">Must be at least 0 (non-negative).</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public IEnumerable<ScanEntity>? GetAllWithinRange(int days)
+    {
+        // confirm that a valid day range was passed
+        if (days < 0)
+        {
+            return null;
+        }
+        return _scanContext.Scans.AsEnumerable()
+            .Where(x => x.CompareDateWithinRange(days, DateTime.Now));
     }
 
     /// <summary>
@@ -62,7 +95,7 @@ public class ScanService : IScanService
     /// <param name="Entity"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public Scan Create(Scan Entity)
+    public ScanEntity Create(ScanEntity Entity)
     {
         // confirm that a Scan was passed
         if (Entity is null)
@@ -70,47 +103,50 @@ public class ScanService : IScanService
             throw new ArgumentNullException(nameof(Entity));
         }
         // configure db timestamps
-        Entity.Created = new LotCom.Types.Timestamp(DateTime.Now).Stamp;
+        Entity.Created = new Timestamp(DateTime.Now).Stamp;
         Entity.Updated = Entity.Created;
         // create the new entry and save to the Db
-        _context.Scans.Add(Entity);
-        _context.Scans.Entry(Entity).State = EntityState.Added;
+        _scanContext.Scans.Add(Entity);
+        _scanContext.Scans.Entry(Entity).State = EntityState.Added;
         Save();
         // return the newly created entity for CreatedAtRoute
-        return _context.Entry(Entity).Entity;
+        return _scanContext.Entry(Entity).Entity;
     }
 
     /// <summary>
-    /// Updates an existing Process in the Database.
+    /// Updates an existing Scan in the Database.
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="Entity"></param>
-    /// <exception cref="NotImplementedException"></exception>
-    public void Update(int id, Scan Entity)
+    /// <param name="Scan"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public bool Update(int id, ScanEntity Scan)
     {
-        // confirm that a valid id was passed
-        if (id < 1)
+        // confirm a Scan is passed
+        if (Scan is null)
         {
-            throw new ArgumentNullException(nameof(id));
+            throw new ArgumentNullException(nameof(Scan));
         }
-        // confirm that a Scan was passed
-        if (Entity is null)
+        // confirm that the Scan exists in the Database
+        ScanEntity? ScanFromDatabase = Get(id);
+        if (ScanFromDatabase is null)
         {
-            throw new ArgumentNullException(nameof(Entity));
+            return false;
         }
-        throw new NotImplementedException();
-        // Entity.Updated = new Timestamp(DateTime.Now).Stamp;
-        // _scanContext.Entry(Entity).State = EntityState.Modified;
+        // update the entry in context
+        _scanMapper.UpdateEntity(ScanFromDatabase, Scan);
+        ScanFromDatabase.Updated = new Timestamp(DateTime.Now).Stamp;
+        _scanContext.Entry(ScanFromDatabase).State = EntityState.Modified;
+        return true;
     }
 
     /// <summary>
     /// Removes an existing Scan from the Database.
     /// </summary>
     /// <param name="Entity"></param>
-    public void Delete(Scan Entity)
+    public void Delete(ScanEntity Entity)
     {
-        _context.Scans.Remove(Entity);
-        _context.Entry(Entity).State = EntityState.Deleted;
+        _scanContext.Scans.Remove(Entity);
+        _scanContext.Entry(Entity).State = EntityState.Deleted;
     }
 
     /// <summary>
@@ -119,6 +155,6 @@ public class ScanService : IScanService
     /// <returns></returns>
     public bool Save()
     {
-        return _context.SaveChanges() >= 0;
+        return _scanContext.SaveChanges() >= 0;
     }
 }

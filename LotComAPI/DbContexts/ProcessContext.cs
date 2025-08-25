@@ -1,17 +1,17 @@
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.DbContexts;
 
 /// <summary>
-/// Creates a context ("session") on the Prints Database table.
+/// Creates a context ("session") on the Process Database table.
 /// </summary>
 public class ProcessContext : DbContext
 {
     /// <summary>
-    /// Contains the current set of Prints in the Database context.
+    /// Contains the current set of Processes in the Database context.
     /// </summary>
-    public DbSet<Process> Processes { get; set; }
+    public DbSet<ProcessEntity> Processes { get; set; }
 
     public ProcessContext(DbContextOptions<ProcessContext> Options) : base(Options)
     {

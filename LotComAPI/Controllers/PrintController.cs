@@ -1,8 +1,9 @@
 using LotComAPI.Services;
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
-using LotComAPI.Models;
-using LotComAPI.Mappers;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
 
 namespace LotComAPI.Controllers;
 
@@ -15,7 +16,9 @@ public class PrintController : ControllerBase
 {
     private readonly IPrintService _printService;
 
-    public PrintController(IPrintService PrintService)
+    private readonly IMapper<Print, PrintEntity, PrintDto> _printMapper;
+
+    public PrintController(IPrintService PrintService, IMapper<Print, PrintEntity, PrintDto> PrintMapper)
     {
         // confirm a PrintService was injected
         if (PrintService is null)
@@ -23,6 +26,12 @@ public class PrintController : ControllerBase
             throw new ArgumentNullException(nameof(PrintService));
         }
         _printService = PrintService;
+        // confirm a PrintMapper was injected
+        if (PrintMapper is null)
+        {
+            throw new ArgumentNullException(nameof(PrintMapper));
+        }
+        _printMapper = PrintMapper;
     }
 
     /// <summary>
@@ -32,10 +41,54 @@ public class PrintController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<PrintDto>> GetAll()
     {
-        IEnumerable<Print> PrintsFromDatabase = _printService.GetAll();
-        // convert each of the Print entities into a Dto
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetAll();
+        // convert each of the PrintEntity entities into a Dto
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
-            .Select(PrintMapper.EntityToDto);
+            .Select(_printMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for Print objects created on a specific Date in the database.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    [HttpGet("onDate")]
+    public ActionResult<IEnumerable<PrintEntity>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
+    {
+        // parse the date to a DateTime object
+        string Date = $"{month}/{day}/{year}";
+        bool ValidDate = DateTime.TryParse(Date, out DateTime ParsedDate);
+        if (!ValidDate)
+        {
+            return BadRequest();
+        }
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDate(ParsedDate);
+        // convert each of the PrintEntity entities into a Dto
+        IEnumerable<PrintDto> Dtos = PrintsFromDatabase
+            .Select(_printMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for Print objects created by a specific Process on a specific Date in the database.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    [HttpGet("onDateBy")]
+    public ActionResult<IEnumerable<PrintEntity>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
+    {
+        // parse the date to a DateTime object
+        string Date = $"{month}/{day}/{year}";
+        bool ValidDate = DateTime.TryParse(Date, out DateTime ParsedDate);
+        if (!ValidDate)
+        {
+            return BadRequest();
+        }
+        IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
+        // convert each of the PrintEntity entities into a Dto
+        IEnumerable<PrintDto> Dtos = PrintsFromDatabase
+            .Select(_printMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -47,49 +100,26 @@ public class PrintController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<PrintDto> Get(int id)
     {
-        Print? PrintFromDatabase = _printService.Get(id);
+        PrintEntity? PrintFromDatabase = _printService.Get(id);
         if (PrintFromDatabase is null)
         {
             return NotFound();
         }
-        return Ok(PrintMapper.EntityToDto(PrintFromDatabase));
+        return Ok(_printMapper.EntityToDto(PrintFromDatabase));
     }
 
     /// <summary>
     /// Processes a POST HTTP request to add a single Print object to the database. 
     /// </summary>
-    /// <param name="Print">The Print object that will be POSTed to the database.</param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<PrintDto> Create(int ProcessId, int PartId, int Quantity, int Shift, string Operator, string ProductionDate, int? SecondaryQuantity = null, int? TertiaryQuantity = null, int? SecondaryShift = null, int? TertiaryShift = null, string? SecondaryOperator = null, string? TertiaryOperator = null, int? JBKNumber = null, string? LotNumber = null, int? DieNumber = null, int? DeburrJBKNumber = null, string? ModelNumber = null, string? HeatNumber = null)
+    public ActionResult<PrintDto> Create([FromBody] PrintDto Dto)
     {
-        // collect a Dto from the HTTP request parameters
-        PrintDto DtoFromHttp = PrintMapper.HttpToDto
-        (
-            ProcessId,
-            PartId,
-            Quantity,
-            Shift,
-            Operator,
-            ProductionDate,
-            SecondaryQuantity,
-            TertiaryQuantity,
-            SecondaryShift,
-            TertiaryShift,
-            SecondaryOperator,
-            TertiaryOperator,
-            JBKNumber,
-            LotNumber,
-            DieNumber,
-            DeburrJBKNumber,
-            ModelNumber,
-            HeatNumber
-        );
-        // map the new Print (as a Dto) to an entity and add it to the Db
-        Print Entity = PrintMapper.DtoToEntity(DtoFromHttp);
+        // map the new Print (as a Dto from the Data Access Layer) to an entity and add it to the Db
+        PrintEntity Entity = _printMapper.DtoToEntity(Dto);
         Entity = _printService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
-        PrintDto PrintToReturn = PrintMapper.EntityToDto(Entity);
+        PrintDto PrintToReturn = _printMapper.EntityToDto(Entity);
         // send a CreatedAtRoute response with a 201 status code
         return new CreatedAtActionResult
         (
@@ -103,12 +133,22 @@ public class PrintController : ControllerBase
     /// <summary>
     /// Processes a PUT HTTP request to update a single Print object in the database.
     /// </summary>
-    /// <param name="id">The unique ID of the object that is requested.</param>
-    /// <param name="Print">The Print object that will be POSTed to the database.</param>
     /// <returns></returns>
-    [HttpPut]
-    public IActionResult Update(int id, Print Print)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] PrintDto Dto)
     {
+        // confirm an id was passed
+        if (Dto is null || id != Dto.Id)
+        {
+            return BadRequest();
+        }
+        // update the Entity with the service
+        bool Result = _printService.Update(id, _printMapper.DtoToEntity(Dto));
+        if (!Result)
+        {
+            return NotFound();
+        }
+        _printService.Save();
         return NoContent();
     }
 
@@ -124,7 +164,7 @@ public class PrintController : ControllerBase
         {
             return BadRequest();
         }
-        Print? PrintFromDatabase = _printService.Get(id);
+        PrintEntity? PrintFromDatabase = _printService.Get(id);
         if (PrintFromDatabase is null)
         {
             return NotFound();

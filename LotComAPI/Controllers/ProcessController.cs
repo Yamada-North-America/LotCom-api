@@ -1,113 +1,77 @@
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
-using LotComAPI.Models;
+using LotCom.Database.Entities;
 using LotComAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
 
 namespace LotComAPI.Controllers;
 
 /// <summary>
-/// 
+/// Provides RESTful operations on the Process database.
 /// </summary>
 [ApiController]
 [Route("[controller]")]
 public class ProcessController : ControllerBase
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    private IProcessService _service;
+    private readonly IProcessService _processService;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="Service"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public ProcessController(IProcessService Service)
+    private readonly IMapper<Process, ProcessEntity, ProcessDto> _processMapper;
+
+    public ProcessController(IProcessService ProcessService, IMapper<Process, ProcessEntity, ProcessDto> ProcessMapper)
     {
-        // confirm that the ProcessService was injected
-        if (Service is null)
+        // confirm a ProcessService was injected
+        if (ProcessService is null)
         {
-            throw new ArgumentNullException(nameof(Service));
+            throw new ArgumentNullException(nameof(ProcessService));
         }
-        _service = Service;
+        _processService = ProcessService;
+        // confirm a ProcessMapper was injected
+        if (ProcessMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ProcessMapper));
+        }
+        _processMapper = ProcessMapper;
     }
 
     /// <summary>
-    /// 
+    /// Processes a GET HTTP request for all of the Process objects in the database.
     /// </summary>
     /// <returns></returns>
     [HttpGet]
     public ActionResult<IEnumerable<ProcessDto>> Get()
     {
-        IEnumerable<Process> ProcessesFromDatabase = _service.GetAll();
+        IEnumerable<ProcessEntity> ProcessesFromDatabase = _processService.GetAllFromStoredProcedure();
         return Ok(ProcessesFromDatabase
-            .Select(ProcessMapper.EntityToDto));
+            .Select(_processMapper.EntityToDto));
     }
 
     /// <summary>
-    /// 
+    /// Processes a GET HTTP request for a single Process object in the database.
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
     public ActionResult<ProcessDto> Get(int id)
     {
-        Process? ProcessFromDatabase = _service.Get(id);
+        ProcessEntity? ProcessFromDatabase = _processService.Get(id);
         if (ProcessFromDatabase is null)
         {
             return NotFound();
         }
-        return Ok(ProcessMapper.EntityToDto(ProcessFromDatabase));
+        return Ok(_processMapper.EntityToDto(ProcessFromDatabase));
     }
 
     /// <summary>
-    /// 
+    /// Processes a POST HTTP request to add a single Process object to the database. 
     /// </summary>
-    /// <param name="LineCode"></param>
-    /// <param name="LineName"></param>
-    /// <param name="Title"></param>
-    /// <param name="Serialization"></param>
-    /// <param name="Type"></param>
-    /// <param name="Origination"></param>
-    /// <param name="PassThroughType"></param>
-    /// <param name="DoesPrint"></param>
-    /// <param name="DoesScan"></param>
-    /// <param name="UsesJBKNumber"></param>
-    /// <param name="UsesLotNumber"></param>
-    /// <param name="UsesDieNumber"></param>
-    /// <param name="UsesDeburrJBKNumber"></param>
-    /// <param name="UsesModelNumber"></param>
-    /// <param name="UsesHeatNumber"></param>
-    /// <param name="Previous1"></param>
-    /// <param name="Previous2"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ProcessDto> Create(int LineCode, string LineName, string Title, string? Serialization, string Type, int Origination, string? PassThroughType, int DoesPrint, int DoesScan, int UsesJBKNumber, int UsesLotNumber, int UsesDieNumber, int UsesDeburrJBKNumber, int UsesModelNumber, int UsesHeatNumber, int? Previous1, int? Previous2)
+    public ActionResult<ProcessDto> Create([FromBody] ProcessDto Dto)
     {
-        ProcessDto Dto = ProcessMapper.HttpToDto
-        (
-            LineCode,
-            LineName,
-            Title,
-            Serialization,
-            Type,
-            Origination,
-            PassThroughType,
-            DoesPrint,
-            DoesScan,
-            UsesJBKNumber,
-            UsesLotNumber,
-            UsesDieNumber,
-            UsesDeburrJBKNumber,
-            UsesModelNumber,
-            UsesHeatNumber,
-            Previous1,
-            Previous2
-        );
-        Process Entity = ProcessMapper.DtoToEntity(Dto);
-        Entity = _service.Create(Entity);
-        ProcessDto DtoToReturn = ProcessMapper.EntityToDto(Entity);
+        ProcessEntity Entity = _processMapper.DtoToEntity(Dto);
+        Entity = _processService.Create(Entity);
+        ProcessDto DtoToReturn = _processMapper.EntityToDto(Entity);
         return new CreatedAtActionResult
         (
             nameof(Get),
@@ -118,12 +82,24 @@ public class ProcessController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Processes a PUT HTTP request to update a single Process object in the database.
     /// </summary>
     /// <returns></returns>
-    [HttpPut]
-    public IActionResult Update()
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] ProcessDto Dto)
     {
+        // confirm an id was passed
+        if (Dto is null || id != Dto.Id)
+        {
+            return BadRequest();
+        }
+        // update the Entity with the service
+        bool Result = _processService.Update(id, _processMapper.DtoToEntity(Dto));
+        if (!Result)
+        {
+            return NotFound();
+        }
+        _processService.Save();
         return NoContent();
     }
 
@@ -135,13 +111,13 @@ public class ProcessController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        Process? ProcessFromDatabase = _service.Get(id);
+        ProcessEntity? ProcessFromDatabase = _processService.Get(id);
         if (ProcessFromDatabase is null)
         {
             return NotFound();
         }
-        _service.Delete(ProcessFromDatabase);
-        _service.Save();
+        _processService.Delete(ProcessFromDatabase);
+        _processService.Save();
         return NoContent();
     }
 }

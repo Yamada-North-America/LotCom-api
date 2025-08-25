@@ -1,13 +1,14 @@
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 
 namespace LotComAPI.Services;
 
 public interface IScanService
 {
-    IEnumerable<Scan> GetAll();
-    Scan? Get(int id);
-    Scan Create(Scan Entity);
-    void Update(int id, Scan Entity);
-    void Delete(Scan Entity);
+    IEnumerable<ScanEntity> GetAll();
+    ScanEntity? Get(int id);
+    IEnumerable<ScanEntity>? GetAllWithinRange(int days);
+    ScanEntity Create(ScanEntity Entity);
+    bool Update(int id, ScanEntity Entity);
+    void Delete(ScanEntity Entity);
     bool Save();
 }
