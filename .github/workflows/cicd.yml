@@ -60,6 +60,19 @@ jobs:
       run: |
         cd .\LotComAPI
         dotnet restore
+
+    - name: Set up configuration
+      env:
+        CONN_STRING: ${{ secrets.CONN_STRING }}
+        API_URL: ${{ secrets.API_URL }}
+      shell: pwsh
+      run: |
+        # retrieve setup secrets
+        $conn = "$env:CONN_STRING"
+        $url = "$env:API_URL"
+
+        # create the appsettings.json file
+        echo '{"Logging":{"LogLevel":{"Default":"Trace","Microsoft.AspNetCore":"Information"}},"AllowedHosts":"*","Urls":$url,"ConnectionStrings":{"YNA":$conn}}' > "D:\a\LotCom-api\LotCom-api\LotComAPI\appsettings.json"
       
     - name: Build
       shell: pwsh
@@ -72,6 +85,9 @@ jobs:
         # Copy-Item -Path ".\win-x64" -Destination "D:\a\Package" -Recurse
         cd "D:\a\LotCom-api\LotCom-api\LotComAPI\bin\Release\net9.0"
         Compress-Archive -Path ".\win-x64" -DestinationPath "D:\a\Package\LotComAPI_$env:VERSION_NUMBER.zip"
+
+        # remove appsettings file
+        Remove-Item "D:\a\LotCom-api\LotCom-api\LotComAPI\appsettings.json"
 
     - name: Archive package artifact
       uses: actions/upload-artifact@v4
