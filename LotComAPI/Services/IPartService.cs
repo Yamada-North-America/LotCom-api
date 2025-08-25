@@ -1,13 +1,15 @@
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 
 namespace LotComAPI.Services;
 
 public interface IPartService
 {
-    IEnumerable<Part> GetAll();
-    Part? Get(int id);
-    Part Create(Part Part);
-    void Update(int id, Part Part);
-    void Delete(Part Part);
+    IEnumerable<PartEntity> GetAll();
+    IEnumerable<PartEntity> GetPrintedBy(int processId);
+    IEnumerable<PartEntity> GetScannedBy(int processId);
+    PartEntity? Get(int id);
+    PartEntity Create(PartEntity Part);
+    bool Update(int id, PartEntity Part);
+    void Delete(PartEntity Part);
     bool Save();
 }

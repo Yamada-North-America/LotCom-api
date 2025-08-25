@@ -1,4 +1,4 @@
-using LotComAPI.Entities;
+using LotCom.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotComAPI.DbContexts;
@@ -11,7 +11,7 @@ public class PrintContext : DbContext
     /// <summary>
     /// Contains the current set of Prints in the Database context.
     /// </summary>
-    public DbSet<Print> Prints { get; set; }
+    public DbSet<PrintEntity> Prints { get; set; }
 
     public PrintContext(DbContextOptions<PrintContext> Options) : base(Options)
     {

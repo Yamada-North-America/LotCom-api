@@ -1,8 +1,9 @@
-using LotComAPI.Entities;
-using LotComAPI.Mappers;
-using LotComAPI.Models;
+using LotCom.Database.Entities;
 using LotComAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using LotCom.Database.Mappers;
+using LotCom.Core.Models;
+using LotCom.Database.Transfer;
 
 namespace LotComAPI.Controllers;
 
@@ -15,7 +16,9 @@ public class ScanController : ControllerBase
 {
     private readonly IScanService _scanService;
 
-    public ScanController(IScanService ScanService)
+    private readonly IMapper<Scan, ScanEntity, ScanDto> _scanMapper;
+
+    public ScanController(IScanService ScanService, IMapper<Scan, ScanEntity, ScanDto> ScanMapper)
     {
         // confirm a ScanService was injected
         if (ScanService is null)
@@ -23,6 +26,12 @@ public class ScanController : ControllerBase
             throw new ArgumentNullException(nameof(ScanService));
         }
         _scanService = ScanService;
+        // confirm a ScanMapper was injected
+        if (ScanMapper is null)
+        {
+            throw new ArgumentNullException(nameof(ScanMapper));
+        }
+        _scanMapper = ScanMapper;
     }
 
     /// <summary>
@@ -32,10 +41,28 @@ public class ScanController : ControllerBase
     [HttpGet()]
     public ActionResult<IEnumerable<ScanDto>> GetAll()
     {
-        IEnumerable<Scan> ScansFromDatabase = _scanService.GetAll();
-        // convert each of the Scan entities into a Dto
+        IEnumerable<ScanEntity> ScansFromDatabase = _scanService.GetAll();
+        // convert each of the ScanEntity entities into a Dto
         IEnumerable<ScanDto> Dtos = ScansFromDatabase
-            .Select(ScanMapper.EntityToDto);
+            .Select(_scanMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for all of the Scan objects within a set range from current date in the database.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("within")]
+    public ActionResult<IEnumerable<ScanDto>> GetAllWithinRange([FromQuery] int days)
+    {
+        IEnumerable<ScanEntity>? ScansFromDatabase = _scanService.GetAllWithinRange(days);
+        if (ScansFromDatabase is null)
+        {
+            return BadRequest();
+        }
+        // convert each of the ScanEntity entities into a Dto
+        IEnumerable<ScanDto> Dtos = ScansFromDatabase
+            .Select(_scanMapper.EntityToDto);
         return Ok(Dtos);
     }
 
@@ -47,69 +74,26 @@ public class ScanController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ScanDto> Get(int id)
     {
-        Scan? ScanFromDatabase = _scanService.Get(id);
+        ScanEntity? ScanFromDatabase = _scanService.Get(id);
         if (ScanFromDatabase is null)
         {
             return NotFound();
         }
-        return Ok(ScanMapper.EntityToDto(ScanFromDatabase));
+        return Ok(_scanMapper.EntityToDto(ScanFromDatabase));
     }
 
     /// <summary>
     /// Processes a POST HTTP request to add a single Scan object to the database.
     /// </summary>
-    /// <param name="Date"></param>
-    /// <param name="Address"></param>
-    /// <param name="ProcessId"></param>
-    /// <param name="PartId"></param>
-    /// <param name="Quantity"></param>
-    /// <param name="SecondaryQuantity"></param>
-    /// <param name="TertiaryQuantity"></param>
-    /// <param name="Shift"></param>
-    /// <param name="SecondaryShift"></param>
-    /// <param name="TertiaryShift"></param>
-    /// <param name="Operator"></param>
-    /// <param name="SecondaryOperator"></param>
-    /// <param name="TertiaryOperator"></param>
-    /// <param name="JBKNumber"></param>
-    /// <param name="LotNumber"></param>
-    /// <param name="DieNumber"></param>
-    /// <param name="DeburrJBKNumber"></param>
-    /// <param name="ModelNumber"></param>
-    /// <param name="HeatNumber"></param>
-    /// <param name="ProductionDate"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult<ScanDto> Create(string Date, string Address, int ProcessId, int PartId, int Quantity, int? SecondaryQuantity, int? TertiaryQuantity, int Shift, int? SecondaryShift, int? TertiaryShift, string Operator, string? SecondaryOperator, string? TertiaryOperator, int? JBKNumber, string? LotNumber, int? DieNumber, int? DeburrJBKNumber, string? ModelNumber, string? HeatNumber, string ProductionDate)
+    public ActionResult<ScanDto> Create([FromBody] ScanDto Dto)
     {
-        ScanDto DtoFromHttp = ScanMapper.HttpToDto
-        (
-            Date,
-            Address,
-            ProcessId,
-            PartId,
-            Quantity,
-            SecondaryQuantity,
-            TertiaryQuantity,
-            Shift,
-            SecondaryShift,
-            TertiaryShift,
-            Operator,
-            SecondaryOperator,
-            TertiaryOperator,
-            JBKNumber,
-            LotNumber,
-            DieNumber,
-            DeburrJBKNumber,
-            ModelNumber,
-            HeatNumber,
-            ProductionDate
-        );
-        // map the new Scan (as a Dto) to an entity and add it to the Db
-        Scan Entity = ScanMapper.DtoToEntity(DtoFromHttp);
+        // map the new Scan (as a Dto from the Data Access Layer) to an entity and add it to the Db
+        ScanEntity Entity = _scanMapper.DtoToEntity(Dto);
         Entity = _scanService.Create(Entity);
         // remap the entity to a Dto to return its CreatedAtRoute status
-        ScanDto ScanToReturn = ScanMapper.EntityToDto(Entity);
+        ScanDto ScanToReturn = _scanMapper.EntityToDto(Entity);
         // send a CreatedAtRoute response with a 201 status code
         return new CreatedAtActionResult
         (
@@ -123,26 +107,22 @@ public class ScanController : ControllerBase
     /// <summary>
     /// Processes a PUT HTTP request to update a single Scan object in the database.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="Scan"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    [HttpPut]
-    public IActionResult Update(int id, Scan Scan)
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] ScanDto Dto)
     {
-        if (id < 1)
+        // confirm an id was passed
+        if (Dto is null || id != Dto.Id)
         {
             return BadRequest();
         }
-        if (Scan is null)
-        {
-            return BadRequest();
-        }
-        Scan? ScanFromDatabase = _scanService.Get(id);
-        if (ScanFromDatabase is null)
+        // update the Entity with the service
+        bool Result = _scanService.Update(id, _scanMapper.DtoToEntity(Dto));
+        if (!Result)
         {
             return NotFound();
         }
+        _scanService.Save();
         return NoContent();
     }
 
@@ -159,7 +139,7 @@ public class ScanController : ControllerBase
         {
             return BadRequest();
         }
-        Scan? ScanFromDatabase = _scanService.Get(id);
+        ScanEntity? ScanFromDatabase = _scanService.Get(id);
         if (ScanFromDatabase is null)
         {
             return NotFound();
