@@ -71,7 +71,7 @@ public class ProcessService : IProcessService
     public ProcessEntity? Get(int id)
     {
         // confirm that a valid id was passed
-        if (id < 1)
+        if (id < 0)
         {
             return null;
         }
