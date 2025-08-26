@@ -41,7 +41,7 @@ public class ProcessController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ProcessDto>> Get()
     {
-        IEnumerable<ProcessEntity> ProcessesFromDatabase = _processService.GetAllFromStoredProcedure();
+        IEnumerable<ProcessEntity> ProcessesFromDatabase = _processService.GetAll();
         return Ok(ProcessesFromDatabase
             .Select(_processMapper.EntityToDto));
     }
