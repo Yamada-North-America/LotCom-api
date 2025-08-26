@@ -20,3 +20,8 @@
   - `Update()`: Updates a Scan entity using the provided model.
 - CI/CD automation.
 - Added a new Serial Feed endpoint that allows universal consumption of JBK and Lot Numbers.
+
+## `1.0.11`
+#### `1.0.1` Hotfixes
+- Allow access of 0-index Process (dummy Process).
+- Remove Stored Procedure access method for Processes (changes are too frequent). 

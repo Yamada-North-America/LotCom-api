@@ -54,15 +54,6 @@ public class ProcessService : IProcessService
         return _processContext.Processes;
     }
 
-
-    public IEnumerable<ProcessEntity> GetAllFromStoredProcedure()
-    {
-        IEnumerable<ProcessEntity> ProcessesFromSP = _processContext
-            .Set<ProcessEntity>()
-            .FromSql($"EXEC dbo.GetAllProcesses");
-        return ProcessesFromSP;
-    }
-
     /// <summary>
     /// Queries a specific Process from the Database by id.
     /// </summary>
