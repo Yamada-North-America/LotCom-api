@@ -67,7 +67,7 @@ public class ScanController : ControllerBase
     }
 
     /// <summary>
-    /// Processes a GET HTTP request for a single Print object in the database.
+    /// Processes a GET HTTP request for a single Scan object in the database.
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -80,6 +80,24 @@ public class ScanController : ControllerBase
             return NotFound();
         }
         return Ok(_scanMapper.EntityToDto(ScanFromDatabase));
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for all Scan entities that include serialNumber in the database.
+    /// </summary>
+    /// <param name="serialNumber"></param>
+    /// <returns></returns>
+    [HttpGet("serialNumber")]
+    public ActionResult<IEnumerable<ScanDto>> GetWithSerialNumber([FromQuery] int serialNumber)
+    {
+        IEnumerable<ScanEntity>? ScansFromDatabase = _scanService.GetWithSerialNumber(serialNumber);
+        if (ScansFromDatabase is null)
+        {
+            return NotFound();
+        }
+        IEnumerable<ScanDto> Dtos = ScansFromDatabase
+            .Select(_scanMapper.EntityToDto);
+        return Ok(Dtos);
     }
 
     /// <summary>
