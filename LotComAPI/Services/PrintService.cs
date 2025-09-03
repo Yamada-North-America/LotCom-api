@@ -79,6 +79,25 @@ public class PrintService : IPrintService
     }
 
     /// <summary>
+    /// Queries all of the existing Prints that contain a Serial Number that matches serialNumber from the Print database.
+    /// </summary>
+    /// <param name="serialNumber"></param>
+    /// <returns></returns>
+    public IEnumerable<PrintEntity>? GetWithSerialNumber(int serialNumber)
+    {
+        // confirm that a valid serial number was passed
+        if (serialNumber < 1)
+        {
+            return null;
+        }
+        return _printContext.Prints
+            .AsEnumerable()
+            .Where(x => x.GetSerialNumber()
+            .Equals(serialNumber)
+        );
+    }
+
+    /// <summary>
     /// Queries a specific Print from the Database by id.
     /// </summary>
     /// <param name="id"></param>
