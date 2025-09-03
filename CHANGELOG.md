@@ -25,3 +25,10 @@
 #### `1.0.1` Hotfixes
 - Allow access of 0-index Process (dummy Process).
 - Remove Stored Procedure access method for Processes (changes are too frequent). 
+
+## `1.0.12`
+#### `1.0.1` Hotfixes
+
+# `1.0.2`
+### Filter by Serial Number
+- Add endpoints to allow retrieval of `Prints` and `Scans` filtered to only entities that contain a specific Serial Number
