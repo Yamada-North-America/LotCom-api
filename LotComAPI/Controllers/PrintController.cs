@@ -54,7 +54,7 @@ public class PrintController : ControllerBase
     /// <param name="date"></param>
     /// <returns></returns>
     [HttpGet("onDate")]
-    public ActionResult<IEnumerable<PrintEntity>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
+    public ActionResult<IEnumerable<PrintDto>> GetOnDate([FromQuery] string day, [FromQuery] string month, [FromQuery] string year)
     {
         // parse the date to a DateTime object
         string Date = $"{month}/{day}/{year}";
@@ -76,7 +76,7 @@ public class PrintController : ControllerBase
     /// <param name="date"></param>
     /// <returns></returns>
     [HttpGet("onDateBy")]
-    public ActionResult<IEnumerable<PrintEntity>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
+    public ActionResult<IEnumerable<PrintDto>> GetOnDateByProcess([FromQuery] string day, [FromQuery] string month, [FromQuery] string year, [FromQuery] int processId)
     {
         // parse the date to a DateTime object
         string Date = $"{month}/{day}/{year}";
@@ -87,6 +87,24 @@ public class PrintController : ControllerBase
         }
         IEnumerable<PrintEntity> PrintsFromDatabase = _printService.GetOnDateByProcess(ParsedDate, processId);
         // convert each of the PrintEntity entities into a Dto
+        IEnumerable<PrintDto> Dtos = PrintsFromDatabase
+            .Select(_printMapper.EntityToDto);
+        return Ok(Dtos);
+    }
+
+    /// <summary>
+    /// Processes a GET HTTP request for all Print entities that include serialNumber in the database.
+    /// </summary>
+    /// <param name="serialNumber"></param>
+    /// <returns></returns>
+    [HttpGet("serialNumber")]
+    public ActionResult<IEnumerable<PrintDto>> GetWithSerialNumber([FromQuery] int serialNumber)
+    {
+        IEnumerable<PrintEntity>? PrintsFromDatabase = _printService.GetWithSerialNumber(serialNumber);
+        if (PrintsFromDatabase is null)
+        {
+            return NotFound();
+        }
         IEnumerable<PrintDto> Dtos = PrintsFromDatabase
             .Select(_printMapper.EntityToDto);
         return Ok(Dtos);
