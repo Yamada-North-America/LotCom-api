@@ -90,6 +90,25 @@ public class ScanService : IScanService
     }
 
     /// <summary>
+    /// Queries all of the existing Scans that contain a Serial Number that matches serialNumber from the Scan database.
+    /// </summary>
+    /// <param name="serialNumber"></param>
+    /// <returns></returns>
+    public IEnumerable<ScanEntity>? GetWithSerialNumber(int serialNumber)
+    {
+        // confirm that a valid serial number was passed
+        if (serialNumber < 1)
+        {
+            return null;
+        }
+        return _scanContext.Scans
+            .AsEnumerable()
+            .Where(x => x.GetSerialNumber()
+            .Equals(serialNumber)
+        );
+    }
+
+    /// <summary>
     /// Creates a new Scan in the Database.
     /// </summary>
     /// <param name="Entity"></param>
