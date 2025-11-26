@@ -94,17 +94,17 @@ public class ScanService : IScanService
     /// </summary>
     /// <param name="serialNumber"></param>
     /// <returns></returns>
-    public IEnumerable<ScanEntity>? GetWithSerialNumber(int serialNumber)
+    public IEnumerable<ScanEntity>? GetWithSerialNumber(string serialNumber)
     {
         // confirm that a valid serial number was passed
-        if (serialNumber < 1)
+        if (serialNumber is null || serialNumber == "0")
         {
             return null;
         }
         return _scanContext.Scans
-            .AsEnumerable()
-            .Where(x => x.GetSerialNumber()
-            .Equals(serialNumber)
+                .AsEnumerable()
+                .Where(x => x.GetSerialNumber()?
+                .Equals(serialNumber) == true
         );
     }
 
