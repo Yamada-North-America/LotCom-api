@@ -88,7 +88,7 @@ public class ScanController : ControllerBase
     /// <param name="serialNumber"></param>
     /// <returns></returns>
     [HttpGet("serialNumber")]
-    public ActionResult<IEnumerable<ScanDto>> GetWithSerialNumber([FromQuery] int serialNumber)
+    public ActionResult<IEnumerable<ScanDto>> GetWithSerialNumber([FromQuery] string serialNumber)
     {
         IEnumerable<ScanEntity>? ScansFromDatabase = _scanService.GetWithSerialNumber(serialNumber);
         if (ScansFromDatabase is null)
